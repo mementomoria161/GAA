@@ -372,9 +372,9 @@ function init_hero_effect() {
     const baseParticles = [];
     const baseFaces = [];
     
-    // Perpendicular vectors for hammer coordinates (tilted bottom-right to top-left, rotated flatter to point into the sickle mouth)
-    const vnorm = { x: -0.208, y: 0.978 };
-    const unorm = { x: -0.978, y: -0.208 };
+    // Perpendicular vectors for hammer coordinates (tilted bottom-right to top-left, rotated steeper clockwise around head)
+    const vnorm = { x: -0.788, y: 0.616 };
+    const unorm = { x: -0.616, y: -0.788 };
 
     // 1. Hammer Handle (R = 12 rings, S = 6 segments per ring -> 72 vertices)
     const hh_R = 12;
@@ -382,8 +382,8 @@ function init_hero_effect() {
     const hh_offset = baseParticles.length;
     for (let k = 0; k < hh_R; k++) {
         const t = k / (hh_R - 1);
-        const xLine = 0.39 - t * 1.157;
-        const yLine = 0.137 - t * 0.246; // rotated further left, shifted towards sickle blade
+        const xLine = 0.543 - t * 0.567;
+        const yLine = 0.774 - t * 0.725; // rotated steeper clockwise around head, base moved down-left, handle made shorter
         
         const r = 0.022;
         for (let j = 0; j < hh_S; j++) {
@@ -410,14 +410,14 @@ function init_hero_effect() {
     const hhead_R = 12;
     const hhead_S = 4;
     const hhead_offset = baseParticles.length;
-    const hhead_vnorm = { x: 0.208, y: -0.978 }; 
-    const hhead_unorm = { x: -0.978, y: -0.208 }; 
+    const hhead_vnorm = { x: 0.788, y: -0.616 }; 
+    const hhead_unorm = { x: -0.616, y: -0.788 }; 
     
     for (let k = 0; k < hhead_R; k++) {
         const t = k / (hhead_R - 1);
         const lenOffset = -0.19 + t * 0.38;
-        const xLine = -0.767 + lenOffset * hhead_vnorm.x;
-        const yLine = -0.109 + lenOffset * hhead_vnorm.y; // Centered between sickle tip and handle
+        const xLine = -0.024 + lenOffset * hhead_vnorm.x;
+        const yLine = 0.049 + lenOffset * hhead_vnorm.y; // Centered in the sickle mouth
         
         const w_off = 0.07;
         const h_off = 0.07;

@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>GAA | Gemeinwirtschaftliche Arbeitenden-Assoziation</title>
+    <title>GAA</title>
     
     <!-- Meta Details for SEO & Social Embeds -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,6 +19,16 @@
     <link rel="stylesheet" href="styles/fonts.css">
     <link rel="stylesheet" href="styles/general.css">
     <link rel="stylesheet" href="styles/components.css">
+
+    <!-- Favicon Implementation -->
+    <link rel="apple-touch-icon" sizes="180x180" href="images/favicon/apple-touch-icon.png?v=2">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon/favicon-32x32.png?v=2">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon/favicon-16x16.png?v=2">
+    <link rel="manifest" href="images/favicon/site.webmanifest?v=2">
+    <link rel="shortcut icon" href="images/favicon/favicon.ico?v=2">
+    <meta name="apple-mobile-web-app-title" content="GAA">
+    <meta name="application-name" content="GAA">
+    <meta name="theme-color" content="#4C1D9F">
 
     <!-- Component Preloads matching the Bauvolk structure -->
     <link rel="preload" as="fetch" crossorigin href="components/header.html">
@@ -124,6 +134,16 @@
                         In Deutschland sind rund ein Fünftel der Bevölkerung von Armut oder sozialer Ausgrenzung bedroht. Bezahlbarer Wohnraum ist knapp, an öffentlicher Bildung und Kultur wird gespart, während die ökonomische wie soziale Ungleichheit immer weiter wächst. Da die Interessen des Kapitals so mächtig sind, dass sie sich durch individuelles Handeln allein nicht überwinden lassen, bedarf es einer konkreten, revolutionären Praxis. Die Welt und ihre Krisen zu verstehen reicht nicht aus; entscheidend sind erfahrbare Beispiele und Handlungswelten, in denen Neues praktisch erprobt und eingeübt werden kann.
                     </p>
                 </div>
+                
+                <!-- Curved Arrow pointing to the next section (right side) -->
+                <svg class="section-arrow-right" viewBox="0 0 240 300" width="240" height="300">
+                    <defs>
+                        <marker id="arrowhead-right" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                            <path d="M 0 0 L 10 5 L 0 10 z" fill="#F79B06" />
+                        </marker>
+                    </defs>
+                    <path d="M 200 10 C 240 100, 220 220, 50 290" fill="none" stroke="#F79B06" stroke-width="3.5" marker-end="url(#arrowhead-right)" />
+                </svg>
             </div>
         </section>
 
@@ -185,6 +205,16 @@
                         </p>
                     </div>
                 </div>
+                
+                <!-- Curved Arrow pointing to the next section (left side) -->
+                <svg class="section-arrow-left" viewBox="0 0 240 300" width="240" height="300">
+                    <defs>
+                        <marker id="arrowhead-left" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                            <path d="M 0 0 L 10 5 L 0 10 z" fill="#F79B06" />
+                        </marker>
+                    </defs>
+                    <path d="M 110 10 C 10 100, 30 220, 145 290" fill="none" stroke="#F79B06" stroke-width="3.5" marker-end="url(#arrowhead-left)" />
+                </svg>
             </div>
         </section>
 
@@ -234,7 +264,7 @@
                     </p>
                 </div>
                 <div class="reveal delay-300">
-                    <a href="#mitmachen" class="btn btn-primary" style="padding: 1rem 2.5rem; font-size: 1.1rem;">
+                    <a href="files/GAA_Projektpapier.pdf" target="_blank" class="btn btn-primary" style="padding: 1rem 2.5rem; font-size: 1.1rem;">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.75rem; display: inline-block; vertical-align: -3px;">
                             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                             <polyline points="14 2 14 8 20 8"></polyline>
