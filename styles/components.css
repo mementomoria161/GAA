@@ -46,14 +46,13 @@
 
 .btn-light-outline {
     background-color: transparent;
-    border-color: var(--text-on-light);
-    color: var(--text-on-light);
+    border: 2px solid var(--color-primary);
+    color: var(--color-primary);
 }
 
 .btn-light-outline:hover {
-    background-color: rgba(26, 8, 54, 0.05);
-    border-color: var(--color-accent);
-    color: var(--color-accent);
+    background-color: var(--color-primary);
+    color: var(--color-contrast-2);
 }
 
 /* --------------------------------------------------------------------------
@@ -61,7 +60,7 @@
    -------------------------------------------------------------------------- */
 #header {
     position: fixed;
-    top: 1.5rem;
+    top: 2.2rem;
     left: 50%;
     transform: translateX(-50%);
     width: calc(100% - 3rem);
@@ -75,7 +74,7 @@
 }
 
 #header.scrolled {
-    top: 0.75rem;
+    top: 2.2rem;
     transform: translateX(-50%);
 }
 
@@ -678,6 +677,11 @@
     text-align: left;
 }
 
+#saeulen .section-subtitle,
+#projektpapier .section-subtitle {
+    text-align: center;
+}
+
 .goal-card-wrapper {
     perspective: 1000px;
     padding: 10px 10px 20px 10px; /* spacing for shadow and rotation bounding box */
@@ -1065,7 +1069,7 @@ textarea.form-control {
     padding: 2rem;
     border-radius: 8px;
     box-shadow: 0 20px 50px rgba(26, 8, 54, 0.4);
-    border: 2px solid var(--color-accent);
+    border: 3px solid var(--color-primary);
     display: none;
     animation: slideUp var(--transition-smooth) forwards;
 }

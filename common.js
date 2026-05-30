@@ -369,14 +369,214 @@ function init_hero_effect() {
     if (!canvas) return;
 
     const ctx = canvas.getContext("2d");
-    let particles = [];
-    const particleCount = 65;
-    const connectionDistance = 110;
+    const baseParticles = [];
+    const baseFaces = [];
     
+    // Perpendicular vectors for hammer coordinates (tilted bottom-right to top-left, rotated flatter to point into the sickle mouth)
+    const vnorm = { x: -0.208, y: 0.978 };
+    const unorm = { x: -0.978, y: -0.208 };
+
+    // 1. Hammer Handle (R = 12 rings, S = 6 segments per ring -> 72 vertices)
+    const hh_R = 12;
+    const hh_S = 6;
+    const hh_offset = baseParticles.length;
+    for (let k = 0; k < hh_R; k++) {
+        const t = k / (hh_R - 1);
+        const xLine = 0.39 - t * 1.157;
+        const yLine = 0.137 - t * 0.246; // rotated further left, shifted towards sickle blade
+        
+        const r = 0.022;
+        for (let j = 0; j < hh_S; j++) {
+            const theta = (j * 2 * Math.PI) / hh_S;
+            const x0 = xLine + r * Math.cos(theta) * vnorm.x;
+            const y0 = yLine + r * Math.cos(theta) * vnorm.y;
+            const z0 = r * Math.sin(theta);
+            
+            baseParticles.push({ x0: x0, y0: y0, z0: z0, color: '#F6BAFF' });
+        }
+    }
+    // Generate Hammer Handle Faces
+    for (let k = 0; k < hh_R - 1; k++) {
+        for (let j = 0; j < hh_S; j++) {
+            const v0 = hh_offset + k * hh_S + j;
+            const v1 = hh_offset + k * hh_S + (j + 1) % hh_S;
+            const v2 = hh_offset + (k + 1) * hh_S + (j + 1) % hh_S;
+            const v3 = hh_offset + (k + 1) * hh_S + j;
+            baseFaces.push({ indices: [v0, v1, v2, v3], color: '#F6BAFF' });
+        }
+    }
+
+    // 2. Hammer Head (R = 12 slices, S = 4 segments per slice -> 48 vertices)
+    const hhead_R = 12;
+    const hhead_S = 4;
+    const hhead_offset = baseParticles.length;
+    const hhead_vnorm = { x: 0.208, y: -0.978 }; 
+    const hhead_unorm = { x: -0.978, y: -0.208 }; 
+    
+    for (let k = 0; k < hhead_R; k++) {
+        const t = k / (hhead_R - 1);
+        const lenOffset = -0.19 + t * 0.38;
+        const xLine = -0.767 + lenOffset * hhead_vnorm.x;
+        const yLine = -0.109 + lenOffset * hhead_vnorm.y; // Centered between sickle tip and handle
+        
+        const w_off = 0.07;
+        const h_off = 0.07;
+        
+        const corners = [
+            { cx: w_off, cy: h_off },
+            { cx: -w_off, cy: h_off },
+            { cx: -w_off, cy: -h_off },
+            { cx: w_off, cy: -h_off }
+        ];
+        
+        for (let j = 0; j < hhead_S; j++) {
+            const x0 = xLine + corners[j].cx * hhead_unorm.x;
+            const y0 = yLine + corners[j].cx * hhead_unorm.y;
+            const z0 = corners[j].cy;
+            
+            const color = Math.random() > 0.35 ? '#F6BAFF' : '#F79B06';
+            baseParticles.push({ x0: x0, y0: y0, z0: z0, color: color });
+        }
+    }
+    // Generate Hammer Head Faces
+    for (let k = 0; k < hhead_R - 1; k++) {
+        for (let j = 0; j < hhead_S; j++) {
+            const v0 = hhead_offset + k * hhead_S + j;
+            const v1 = hhead_offset + k * hhead_S + (j + 1) % hhead_S;
+            const v2 = hhead_offset + (k + 1) * hhead_S + (j + 1) % hhead_S;
+            const v3 = hhead_offset + (k + 1) * hhead_S + j;
+            baseFaces.push({ indices: [v0, v1, v2, v3], color: '#F6BAFF' });
+        }
+    }
+    // Add end caps for the Hammer Head
+    baseFaces.push({
+        indices: [hhead_offset, hhead_offset + 3, hhead_offset + 2, hhead_offset + 1],
+        color: '#F6BAFF'
+    });
+    baseFaces.push({
+        indices: [
+            hhead_offset + (hhead_R - 1) * hhead_S,
+            hhead_offset + (hhead_R - 1) * hhead_S + 1,
+            hhead_offset + (hhead_R - 1) * hhead_S + 2,
+            hhead_offset + (hhead_R - 1) * hhead_S + 3
+        ],
+        color: '#F6BAFF'
+    });
+
+    // 3. Sickle Blade (M = 24 steps along arc, N = 5 steps across width, 2 layers -> 240 vertices)
+    const sb_M = 24;
+    const sb_N = 5;
+    const sb_offset = baseParticles.length;
+    const alphaStart = 0.72 * Math.PI;
+    const alphaEnd = -0.82 * Math.PI; // Sweeps clockwise from bottom-left to top-left
+    const zLayers = [0.03, -0.03];
+    
+    for (let l = 0; l < 2; l++) {
+        const zVal = zLayers[l];
+        for (let i = 0; i < sb_M; i++) {
+            const t = i / (sb_M - 1);
+            const alpha = alphaStart + t * (alphaEnd - alphaStart);
+            
+            const rInner = 0.33 + 0.10 * t;
+            const rOuter = 0.45 + 0.14 * Math.sin(t * Math.PI) - 0.03 * t;
+            
+            for (let j = 0; j < sb_N; j++) {
+                const w = j / (sb_N - 1);
+                const r = rInner + w * (rOuter - rInner);
+                
+                const x0 = -0.05 + r * Math.cos(alpha);
+                const y0 = 0.05 + r * Math.sin(alpha);
+                const z0 = zVal;
+                
+                const color = j === sb_N - 1 ? '#F79B06' : (Math.random() > 0.25 ? '#F6BAFF' : '#F79B06');
+                baseParticles.push({ x0: x0, y0: y0, z0: z0, color: color });
+            }
+        }
+    }
+    const layerSize = sb_M * sb_N;
+    // Generate Front & Back Faces
+    for (let i = 0; i < sb_M - 1; i++) {
+        for (let j = 0; j < sb_N - 1; j++) {
+            const f0 = sb_offset + i * sb_N + j;
+            const f1 = sb_offset + i * sb_N + j + 1;
+            const f2 = sb_offset + (i + 1) * sb_N + j + 1;
+            const f3 = sb_offset + (i + 1) * sb_N + j;
+            baseFaces.push({ indices: [f0, f1, f2, f3], color: '#F6BAFF' });
+            
+            const b0 = sb_offset + layerSize + i * sb_N + j;
+            const b1 = sb_offset + layerSize + (i + 1) * sb_N + j;
+            const b2 = sb_offset + layerSize + (i + 1) * sb_N + j + 1;
+            const b3 = sb_offset + layerSize + i * sb_N + j + 1;
+            baseFaces.push({ indices: [b0, b1, b2, b3], color: '#F6BAFF' });
+        }
+    }
+    // Generate Side Edge Faces
+    for (let i = 0; i < sb_M - 1; i++) {
+        // Inner Edge (j = 0)
+        const i_f0 = sb_offset + i * sb_N;
+        const i_f1 = sb_offset + (i + 1) * sb_N;
+        const i_b1 = sb_offset + layerSize + (i + 1) * sb_N;
+        const i_b0 = sb_offset + layerSize + i * sb_N;
+        baseFaces.push({ indices: [i_f0, i_f1, i_b1, i_b0], color: '#F6BAFF' });
+        
+        // Outer Edge (j = N - 1)
+        const o_f0 = sb_offset + i * sb_N + (sb_N - 1);
+        const o_b0 = sb_offset + layerSize + i * sb_N + (sb_N - 1);
+        const o_b1 = sb_offset + layerSize + (i + 1) * sb_N + (sb_N - 1);
+        const o_f1 = sb_offset + (i + 1) * sb_N + (sb_N - 1);
+        baseFaces.push({ indices: [o_f0, o_b0, o_b1, o_f1], color: '#F79B06' });
+    }
+    // Generate End Cap Faces (Base and Tip)
+    for (let j = 0; j < sb_N - 1; j++) {
+        const base_f0 = sb_offset + j;
+        const base_b0 = sb_offset + layerSize + j;
+        const base_b1 = sb_offset + layerSize + j + 1;
+        const base_f1 = sb_offset + j + 1;
+        baseFaces.push({ indices: [base_f0, base_b0, base_b1, base_f1], color: '#F6BAFF' });
+        
+        const tip_f0 = sb_offset + (sb_M - 1) * sb_N + j;
+        const tip_f1 = sb_offset + (sb_M - 1) * sb_N + j + 1;
+        const tip_b1 = sb_offset + layerSize + (sb_M - 1) * sb_N + j + 1;
+        const tip_b0 = sb_offset + layerSize + (sb_M - 1) * sb_N + j;
+        baseFaces.push({ indices: [tip_f0, tip_f1, tip_b1, tip_b0], color: '#F6BAFF' });
+    }
+
+    // 4. Sickle Handle (R = 10 rings, S = 6 segments per ring -> 60 vertices)
+    const sh_R = 10;
+    const sh_S = 6;
+    const sh_offset = baseParticles.length;
+    const sh_vnorm = { x: 0.707, y: 0.707 }; // Perpendicular frame for handle tilted bottom-left to top-right
+    
+    for (let k = 0; k < sh_R; k++) {
+        const t = k / (sh_R - 1);
+        const xLine = -0.54 + t * 0.24;
+        const yLine = 0.59 - t * 0.24; // bottom-left to top-right, connects perfectly to blade base
+        
+        const r = 0.03;
+        for (let j = 0; j < sh_S; j++) {
+            const theta = (j * 2 * Math.PI) / sh_S;
+            const x0 = xLine + r * Math.cos(theta) * sh_vnorm.x;
+            const y0 = yLine + r * Math.cos(theta) * sh_vnorm.y;
+            const z0 = r * Math.sin(theta);
+            
+            baseParticles.push({ x0: x0, y0: y0, z0: z0, color: '#F6BAFF' });
+        }
+    }
+    // Generate Sickle Handle Faces
+    for (let k = 0; k < sh_R - 1; k++) {
+        for (let j = 0; j < sh_S; j++) {
+            const v0 = sh_offset + k * sh_S + j;
+            const v1 = sh_offset + k * sh_S + (j + 1) % sh_S;
+            const v2 = sh_offset + (k + 1) * sh_S + (j + 1) % sh_S;
+            const v3 = sh_offset + (k + 1) * sh_S + j;
+            baseFaces.push({ indices: [v0, v1, v2, v3], color: '#F6BAFF' });
+        }
+    }
+
     const mouse = {
         x: null,
         y: null,
-        radius: 140,
+        radius: 160,
         active: false
     };
 
@@ -389,13 +589,11 @@ function init_hero_effect() {
     window.addEventListener("resize", resizeCanvas);
     resizeCanvas();
 
-    // Mouse listeners bound to window for smoother tracking over overlays
     window.addEventListener("mousemove", (e) => {
         const rect = canvas.getBoundingClientRect();
         const mouseX = e.clientX - rect.left;
         const mouseY = e.clientY - rect.top;
         
-        // Active when inside the canvas bounds
         if (mouseX >= 0 && mouseX <= canvas.width && mouseY >= 0 && mouseY <= canvas.height) {
             mouse.x = mouseX;
             mouse.y = mouseY;
@@ -411,93 +609,141 @@ function init_hero_effect() {
         mouse.active = false;
     });
 
-    class Particle {
-        constructor() {
-            this.x = Math.random() * canvas.width;
-            this.y = Math.random() * canvas.height;
-            // Velocities
-            this.vx = (Math.random() - 0.5) * 0.7;
-            this.vy = (Math.random() - 0.5) * 0.7;
-            this.radius = Math.random() * 2 + 1.5; // size 1.5 to 3.5
-            // Dynamic colors from our design system (orange and pink)
-            this.color = Math.random() > 0.5 ? '#F79B06' : '#F6BAFF';
-        }
-
-        update() {
-            this.x += this.vx;
-            this.y += this.vy;
-
-            // Bounce on bounds
-            if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
-            if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
-            
-            // Keep strictly in bounds
-            if (this.x < 0) this.x = 0;
-            if (this.x > canvas.width) this.x = canvas.width;
-            if (this.y < 0) this.y = 0;
-            if (this.y > canvas.height) this.y = canvas.height;
-        }
-
-        draw() {
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-            ctx.fillStyle = this.color;
-            ctx.fill();
-        }
-    }
-
-    // Initialize particles
-    for (let i = 0; i < particleCount; i++) {
-        particles.push(new Particle());
-    }
+    let angleX = 0;
+    let angleY = 0;
+    let time = 0;
 
     function animate() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // Update & Draw particles
-        particles.forEach(p => {
-            p.update();
-            p.draw();
-        });
+        angleY += 0.0006;
+        angleX = 0.15 * Math.sin(time * 0.004);
+        time += 0.25;
 
-        // Draw connections
-        for (let i = 0; i < particles.length; i++) {
-            const p1 = particles[i];
-            
-            // Draw lines to mouse if close
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+
+        const baseRadius = Math.min(canvas.width, canvas.height) * 0.60;
+        const waveAmp = baseRadius * 0.025;
+
+        const cosX = Math.cos(angleX);
+        const sinX = Math.sin(angleX);
+        const cosY = Math.cos(angleY);
+        const sinY = Math.sin(angleY);
+
+        const projected = [];
+
+        // Project and morph vertices
+        for (let i = 0; i < baseParticles.length; i++) {
+            const p = baseParticles[i];
+
+            const morphFactor = Math.sin(3.5 * p.x0 + time * 0.012) * Math.cos(3.5 * p.y0 - time * 0.01);
+            const radius = baseRadius + waveAmp * morphFactor;
+
+            const x3d = p.x0 * radius;
+            const y3d = p.y0 * radius;
+            const z3d = p.z0 * radius;
+
+            const xRotY = x3d * cosY - z3d * sinY;
+            const zRotY = x3d * sinY + z3d * cosY;
+
+            const yRotX = y3d * cosX - zRotY * sinX;
+            const zRotX = y3d * sinX + zRotY * cosX;
+
+            const d = baseRadius * 2.2;
+            const scaleFactor = d / (d + zRotX);
+
+            let screenX = centerX + xRotY * scaleFactor;
+            let screenY = centerY + yRotX * scaleFactor;
+
             if (mouse.active && mouse.x !== null && mouse.y !== null) {
-                const dx = p1.x - mouse.x;
-                const dy = p1.y - mouse.y;
+                const dx = screenX - mouse.x;
+                const dy = screenY - mouse.y;
                 const dist = Math.sqrt(dx * dx + dy * dy);
-                
-                if (dist < mouse.radius) {
-                    ctx.beginPath();
-                    ctx.moveTo(p1.x, p1.y);
-                    ctx.lineTo(mouse.x, mouse.y);
-                    ctx.strokeStyle = `rgba(247, 155, 6, ${1 - (dist / mouse.radius)})`; // Glowing orange
-                    ctx.lineWidth = 1;
-                    ctx.stroke();
+
+                if (dist < mouse.radius && dist > 0.1) {
+                    const force = (1 - dist / mouse.radius);
+                    const disp = force * force * 55;
+                    screenX += (dx / dist) * disp;
+                    screenY += (dy / dist) * disp;
                 }
             }
 
-            // Draw lines to other particles
-            for (let j = i + 1; j < particles.length; j++) {
-                const p2 = particles[j];
-                const dx = p1.x - p2.x;
-                const dy = p1.y - p2.y;
-                const dist = Math.sqrt(dx * dx + dy * dy);
+            projected.push({
+                x: screenX,
+                y: screenY,
+                z: zRotX,
+                scale: scaleFactor,
+                color: p.color
+            });
+        }
 
-                if (dist < connectionDistance) {
-                    ctx.beginPath();
-                    ctx.moveTo(p1.x, p1.y);
-                    ctx.lineTo(p2.x, p2.y);
-                    // Fade color based on distance
-                    const alpha = 1 - (dist / connectionDistance);
-                    ctx.strokeStyle = `rgba(246, 186, 255, ${alpha * 0.25})`; // Subtle pink line
-                    ctx.lineWidth = 0.8;
-                    ctx.stroke();
-                }
+        // Depth-sort faces back-to-front (Painter's Algorithm)
+        const facesWithDepth = [];
+        for (let i = 0; i < baseFaces.length; i++) {
+            const f = baseFaces[i];
+            const p0 = projected[f.indices[0]];
+            const p1 = projected[f.indices[1]];
+            const p2 = projected[f.indices[2]];
+            const p3 = projected[f.indices[3]];
+
+            const avgZ = (p0.z + p1.z + p2.z + p3.z) / 4;
+            const avgScale = (p0.scale + p1.scale + p2.scale + p3.scale) / 4;
+
+            facesWithDepth.push({
+                indices: f.indices,
+                avgZ: avgZ,
+                avgScale: avgScale,
+                color: f.color
+            });
+        }
+        facesWithDepth.sort((a, b) => b.avgZ - a.avgZ);
+
+        // Draw faces
+        for (let i = 0; i < facesWithDepth.length; i++) {
+            const f = facesWithDepth[i];
+            const p0 = projected[f.indices[0]];
+            const p1 = projected[f.indices[1]];
+            const p2 = projected[f.indices[2]];
+            const p3 = projected[f.indices[3]];
+
+            ctx.beginPath();
+            ctx.moveTo(p0.x, p0.y);
+            ctx.lineTo(p1.x, p1.y);
+            ctx.lineTo(p2.x, p2.y);
+            ctx.lineTo(p3.x, p3.y);
+            ctx.closePath();
+
+            const alpha = Math.max(0.02, Math.min(0.24, (f.avgScale - 0.5) * 0.14));
+
+            // Translucent deep purple facet surface fill
+            ctx.fillStyle = `rgba(76, 29, 159, ${alpha * 0.45})`;
+            ctx.fill();
+
+            // Glowing wireframe edges
+            ctx.strokeStyle = f.color === '#F79B06' 
+                ? `rgba(247, 155, 6, ${alpha * 1.35})` 
+                : `rgba(246, 186, 255, ${alpha * 1.35})`;
+            ctx.lineWidth = 0.5 * f.avgScale;
+            ctx.stroke();
+        }
+
+        // Draw coordinate particles on top
+        for (let i = 0; i < projected.length; i++) {
+            const p = projected[i];
+            const baseSize = p.color === '#F79B06' ? 0.95 : 0.65;
+            const size = baseSize * p.scale;
+            
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, size, 0, Math.PI * 2);
+            
+            const alpha = Math.max(0.12, Math.min(0.8, (p.scale - 0.4) * 0.45));
+            if (p.color === '#F79B06') {
+                ctx.fillStyle = `rgba(247, 155, 6, ${alpha * 1.2})`;
+            } else {
+                ctx.fillStyle = `rgba(246, 186, 255, ${alpha * 1.2})`;
             }
+            ctx.fill();
         }
 
         requestAnimationFrame(animate);
