@@ -298,49 +298,24 @@ function init_scroll_reveal() {
 
 function init_join_form() {
     const form = document.getElementById("joinForm");
-    const container = document.getElementById("formContainer");
 
-    if (form && container) {
+    if (form) {
         form.addEventListener("submit", (e) => {
-            e.preventDefault();
-            
             // Basic values capture
             const nameInput = document.getElementById("formName");
             const emailInput = document.getElementById("formEmail");
             const stadtInput = document.getElementById("formStadt");
-            const messageInput = document.getElementById("formMessage");
             const submitBtn = form.querySelector(".btn-form-submit");
 
             // Frontend validation
             if (!nameInput.value.trim() || !emailInput.value.trim() || !stadtInput.value.trim()) {
+                e.preventDefault();
                 alert("Bitte füllen Sie Name, E-Mail und Stadt aus.");
                 return;
             }
 
-            // Animate submission state on CTA button
-            submitBtn.disabled = true;
-            submitBtn.textContent = "Verbindung wird aufgebaut...";
-            
-            // Mock API delay (1.5 seconds)
-            setTimeout(() => {
-                // Fade out current form and display custom visual confirmation state
-                form.style.display = "none";
-                
-                const successContent = `
-                    <div class="success-overlay">
-                        <div class="success-icon">&check;</div>
-                        <h3 class="success-title">Willkommen Genosse!</h3>
-                        <p class="success-message">
-                            Vielen Dank, <strong>${escapeHTML(nameInput.value)}</strong> aus <strong>${escapeHTML(stadtInput.value)}</strong>, für dein Beitrittsgesuch.
-                        </p>
-                        <p class="success-message" style="margin-top: 1rem; font-size: 0.85em; opacity: 0.7;">
-                            Eine Bestätigung wurde an <strong>${escapeHTML(emailInput.value)}</strong> verschickt. 
-                            Wir melden uns in Kürze über verschlüsselte Kanäle.
-                        </p>
-                    </div>
-                `;
-                container.insertAdjacentHTML("beforeend", successContent);
-            }, 1500);
+            // Change button text to indicate loading, then submit natively to FormSubmit.cloud
+            submitBtn.textContent = "Wird gesendet...";
         });
     }
 }
@@ -626,7 +601,7 @@ function init_hero_effect() {
         const baseRadius = Math.min(canvas.width, canvas.height) * 0.60;
         const waveAmp = baseRadius * 0.025;
 
-        const cosX = Math.cos(angleX);
+            const cosX = Math.cos(angleX);
         const sinX = Math.sin(angleX);
         const cosY = Math.cos(angleY);
         const sinY = Math.sin(angleY);
@@ -636,6 +611,18 @@ function init_hero_effect() {
         // Project and morph vertices
         for (let i = 0; i < baseParticles.length; i++) {
             const p = baseParticles[i];
+
+            // Initialize dynamic physics offsets on the first frame
+            if (p.offX === undefined) {
+                p.offX = 0;
+                p.offY = 0;
+                p.vx = 0;
+                p.vy = 0;
+                // Randomized properties to create a scattered, natural dispersion
+                p.sensitivity = 0.4 + Math.random() * 1.4; // 0.4 to 1.8
+                p.spring = 0.012 + Math.random() * 0.008;   // 0.012 to 0.020
+                p.damping = 0.65 + Math.random() * 0.10;    // 0.65 to 0.75 (high friction to prevent overshoot)
+            }
 
             const morphFactor = Math.sin(3.5 * p.x0 + time * 0.012) * Math.cos(3.5 * p.y0 - time * 0.01);
             const radius = baseRadius + waveAmp * morphFactor;
@@ -653,21 +640,38 @@ function init_hero_effect() {
             const d = baseRadius * 2.2;
             const scaleFactor = d / (d + zRotX);
 
-            let screenX = centerX + xRotY * scaleFactor;
-            let screenY = centerY + yRotX * scaleFactor;
+            let baseScreenX = centerX + xRotY * scaleFactor;
+            let baseScreenY = centerY + yRotX * scaleFactor;
 
+            // Apply spring pull back to base position
+            p.vx -= p.offX * p.spring;
+            p.vy -= p.offY * p.spring;
+
+            // Apply mouse repulsion force
             if (mouse.active && mouse.x !== null && mouse.y !== null) {
-                const dx = screenX - mouse.x;
-                const dy = screenY - mouse.y;
+                const currentScreenX = baseScreenX + p.offX;
+                const currentScreenY = baseScreenY + p.offY;
+                const dx = currentScreenX - mouse.x;
+                const dy = currentScreenY - mouse.y;
                 const dist = Math.sqrt(dx * dx + dy * dy);
 
                 if (dist < mouse.radius && dist > 0.1) {
                     const force = (1 - dist / mouse.radius);
-                    const disp = force * force * 55;
-                    screenX += (dx / dist) * disp;
-                    screenY += (dy / dist) * disp;
+                    p.vx += (dx / dist) * force * force * 2.2 * p.sensitivity;
+                    p.vy += (dy / dist) * force * force * 2.2 * p.sensitivity;
                 }
             }
+
+            // Apply friction/damping
+            p.vx *= p.damping;
+            p.vy *= p.damping;
+
+            // Update offsets
+            p.offX += p.vx;
+            p.offY += p.vy;
+
+            let screenX = baseScreenX + p.offX;
+            let screenY = baseScreenY + p.offY;
 
             projected.push({
                 x: screenX,
