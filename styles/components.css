@@ -205,13 +205,13 @@
     height: 2px;
     background-color: var(--color-contrast-2);
     position: absolute;
-    left: 24px;
+    left: 22px;
     transition: transform var(--transition-fast), opacity var(--transition-fast);
 }
 
-.nav-toggle span:nth-child(1) { top: 26px; }
-.nav-toggle span:nth-child(2) { top: 34px; }
-.nav-toggle span:nth-child(3) { top: 42px; }
+.nav-toggle span:nth-child(1) { top: 25px; }
+.nav-toggle span:nth-child(2) { top: 33px; }
+.nav-toggle span:nth-child(3) { top: 41px; }
 
 .nav-toggle.open span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
 .nav-toggle.open span:nth-child(2) { opacity: 0; }
@@ -223,32 +223,39 @@
     }
     
     .navbar {
-        position: fixed;
-        top: 0;
-        right: -100%;
-        width: 80%;
-        max-width: 320px;
-        height: 100vh;
-        background-color: #1A0836;
-        border-left: 2px solid var(--color-accent);
-        box-shadow: -10px 0 30px rgba(26, 8, 54, 0.35);
+        display: flex;
         flex-direction: column;
-        justify-content: center;
         align-items: center;
-        gap: 2.5rem;
-        transition: right var(--transition-smooth);
+        gap: 1.75rem;
+        position: absolute;
+        top: 84px;
+        left: 50%;
+        transform: translate(-50%, -15px) scale(0.95);
+        width: calc(100vw - 3rem);
+        max-width: 320px;
+        background-color: var(--color-primary);
+        border: 2px solid var(--color-accent);
+        border-radius: 24px;
+        box-shadow: 0 10px 30px rgba(26, 8, 54, 0.35);
+        padding: 2.5rem 2rem;
         z-index: 1000;
-        padding: 4rem 2rem;
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transition: opacity var(--transition-smooth), transform var(--transition-smooth), visibility var(--transition-smooth);
     }
     
     .navbar.open {
-        right: 0;
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        transform: translate(-50%, 0) scale(1);
     }
     
     .nav-links {
         flex-direction: column;
         align-items: center;
-        gap: 2rem;
+        gap: 1.5rem;
     }
     
     .nav-link {
