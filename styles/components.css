@@ -817,18 +817,20 @@
 }
 
 .form-card.reveal {
-    transform: translateY(40px) rotate(-0.8deg);
+    transform: translateY(40px) rotate(-1.5deg);
     opacity: 0;
 }
 
 .form-card.reveal.active {
-    transform: translateY(0) rotate(-0.8deg);
+    transform: translateY(0) rotate(-1.5deg);
     opacity: 1;
 }
 
-.form-card:hover,
-.form-card:has(.form-control:focus) {
-    transform: translateY(-4px) rotate(0deg) scale(1.01);
+.form-card.reveal:hover,
+.form-card.reveal:has(.form-control:focus),
+.form-card.reveal.active:hover,
+.form-card.reveal.active:has(.form-control:focus) {
+    transform: translateY(-6px) rotate(0deg) scale(1.02);
     box-shadow: 12px 12px 0px var(--color-primary);
 }
 

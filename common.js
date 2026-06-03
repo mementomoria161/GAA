@@ -136,7 +136,7 @@ function init_footer() {
     if (linkImpressum) {
         linkImpressum.addEventListener("click", (e) => {
             e.preventDefault();
-            alert("Impressum:\n\nGemeinwirtschaftliche Arbeitenden-Assoziation (GAA)\nVerein in Gründung\nE-Mail: info@gaa-assoziation.de\nStand: Mai 2026");
+            alert("Impressum:\n\nGemeinwirtschaftliche Arbeitenden-Assoziation (GAA)\nVerein in Gründung\nE-Mail: info@gaa-coop.de\nStand: Mai 2026");
         });
     }
 
@@ -301,21 +301,76 @@ function init_join_form() {
 
     if (form) {
         form.addEventListener("submit", (e) => {
+            e.preventDefault();
+
             // Basic values capture
             const nameInput = document.getElementById("formName");
             const emailInput = document.getElementById("formEmail");
             const stadtInput = document.getElementById("formStadt");
+            const messageInput = document.getElementById("formMessage");
             const submitBtn = form.querySelector(".btn-form-submit");
 
             // Frontend validation
             if (!nameInput.value.trim() || !emailInput.value.trim() || !stadtInput.value.trim()) {
-                e.preventDefault();
                 alert("Bitte füllen Sie Name, E-Mail und Stadt aus.");
                 return;
             }
 
-            // Change button text to indicate loading, then submit natively to FormSubmit.cloud
+            // Change button text and disable it to prevent double submissions
             submitBtn.textContent = "Wird gesendet...";
+            submitBtn.disabled = true;
+
+            const formData = {
+                name: nameInput.value.trim(),
+                email: emailInput.value.trim(),
+                stadt: stadtInput.value.trim(),
+                message: messageInput ? messageInput.value.trim() : "",
+                _subject: "Neue Mitgliedschaftsanfrage - GAA Assoziation",
+                _captcha: "false",
+                _template: "table"
+            };
+
+            // Capture honeypot if exists
+            const honeyInput = form.querySelector('input[name="_honey"]');
+            if (honeyInput && honeyInput.value) {
+                formData["_honey"] = honeyInput.value;
+            }
+
+            fetch("https://formsubmit.co/ajax/niki.mitlaender@gmail.com", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error("Form submission failed");
+                }
+            })
+            .then(data => {
+                const formContainer = document.getElementById("formContainer");
+                if (formContainer) {
+                    formContainer.innerHTML = `
+                        <div class="success-overlay">
+                            <div class="success-icon">✓</div>
+                            <h2 class="success-title text-ultra-bold">Willkommen Genoss*in!</h2>
+                            <p class="success-message">
+                                Vielen Dank für dein Interesse an der Assoziation. Deine Nachricht wurde erfolgreich gesendet. Wir werden uns bald bei dir melden!
+                            </p>
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                console.error("Error submitting form:", error);
+                alert("Es gab ein Problem beim Senden des Formulars. Bitte versuche es später noch einmal oder wende dich direkt per Mail an uns.");
+                submitBtn.textContent = "Mitglied werden";
+                submitBtn.disabled = false;
+            });
         });
     }
 }
