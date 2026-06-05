@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>GAA – IMPRESSUM</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    
+    <!-- Stylesheets matching GAA -->
+    <link rel="stylesheet" href="styles/fonts.css">
+    <link rel="stylesheet" href="styles/general.css">
+    <link rel="stylesheet" href="styles/components.css">
+
+    <!-- Favicon Implementation -->
+    <link rel="apple-touch-icon" sizes="180x180" href="images/favicon/apple-touch-icon.png?v=2">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon/favicon-32x32.png?v=2">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon/favicon-16x16.png?v=2">
+    <link rel="manifest" href="images/favicon/site.webmanifest?v=2">
+    <link rel="shortcut icon" href="images/favicon/favicon.ico?v=2">
+    <meta name="apple-mobile-web-app-title" content="GAA">
+    <meta name="application-name" content="GAA">
+    <meta name="theme-color" content="#4C1D9F">
+
+    <!-- Component Preloads -->
+    <link rel="preload" as="fetch" crossorigin href="components/header.html">
+    <link rel="preload" as="fetch" crossorigin href="components/footer.html">
+    <link rel="preload" as="fetch" crossorigin href="components/databanner.html">
+
+    <!-- Central javascript logic -->
+    <script type="text/javascript" src="common.js"></script>
+    <script>
+        load_components(["header", "footer", "databanner"]);
+    </script>
+    
+    <style>
+        #content {
+            padding-top: calc(var(--header-height) + 4rem);
+            padding-bottom: 6rem;
+            background: radial-gradient(circle at 50% 30%, rgba(246, 186, 255, 0.08) 0%, transparent 60%),
+                        radial-gradient(circle at 10% 80%, rgba(247, 155, 6, 0.04) 0%, transparent 40%),
+                        var(--color-bg-dark);
+            min-height: 100vh;
+        }
+        
+        .legal-card {
+            background-color: var(--color-contrast-1) !important;
+            color: var(--text-on-light);
+            padding: 4rem 3rem;
+            border-radius: 16px;
+            border: 3px solid var(--color-primary);
+            box-shadow: 8px 8px 0px var(--color-primary);
+            margin: 0 auto;
+            max-width: 900px;
+        }
+
+        .legal-card h1 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            color: var(--color-primary);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .legal-card h2 {
+            font-size: 1.5rem;
+            color: var(--color-primary);
+            margin-top: 3rem;
+            margin-bottom: 1.25rem;
+            border-bottom: 2px solid rgba(76, 29, 159, 0.1);
+            padding-bottom: 0.5rem;
+        }
+
+        .legal-card p {
+            font-size: 1rem;
+            line-height: 1.65;
+            margin-bottom: 1.5rem;
+        }
+
+        .legal-card a {
+            color: var(--color-primary);
+            text-decoration: underline;
+            font-weight: 700;
+        }
+
+        .legal-card a:hover {
+            color: var(--color-accent);
+        }
+
+        .cc-container {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 1rem;
+        }
+
+        .cc-container img {
+            height: 32px;
+            width: auto;
+        }
+
+        @media (max-width: 600px) {
+            .legal-card {
+                padding: 2.5rem 1.5rem;
+            }
+        }
+
+        #footer {
+            background-color: var(--color-primary) !important;
+            color: var(--color-contrast-1) !important;
+        }
+        #footer .footer-link {
+            color: var(--color-contrast-1) !important;
+        }
+        #footer .footer-link:hover {
+            color: var(--color-accent) !important;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Section (Dynamically Loaded) -->
+    <header id="header"></header>
+
+    <!-- Main Content Container -->
+    <main id="content">
+        <div class="container">
+            <div class="legal-card">
+                <h1>Impressum</h1>
+                
+                <h2>Angaben gemäß § 5 TMG</h2>
+                <p>
+                    Gemeinwirtschaftliche Arbeitenden-Assoziation (GAA)<br>
+                    Verein in Gründung<br>
+                    Vertreten durch:<br>
+                    Niki Mitländer<br>
+                    Wiesenstraße 7<br>
+                    13357 Berlin<br>
+                    Deutschland
+                </p>
+
+                <h2>Kontakt</h2>
+                <p>
+                    Telefon: +4915737581265<br>
+                    E-Mail: <a href="mailto:niki.mitlaender@gmail.com">niki.mitlaender@gmail.com</a>
+                </p>
+
+                <h2>Creative Commons Lizenz</h2>
+                <p>
+                    Alle von uns erschaffenen Inhalte dürfen nicht-kommerziell und unter unserer Nennung als Autor*innen verwendet werden <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">(CC BY-NC 4.0)</a>. Eine kommerzielle Nutzung ist in fast allen Fällen auf Rückfrage problemlos möglich.
+                </p>
+                <div class="cc-container">
+                    <img src="images/internal/cc.svg" alt="CC">
+                    <img src="images/internal/by.svg" alt="BY">
+                    <img src="images/internal/nc-eu.svg" alt="NC">
+                </div>
+
+                <h2>Copyright-Information</h2>
+                <p>
+                    Wir bemühen uns, das Copyright zu befolgen und nur eigene oder gemeinfreie Inhalte zu veröffentlichen. Falls wir versehentlich Werke veröffentlicht haben, die dem Copyright unterliegen, oder sonstige Regelungen missachtet haben, bitten wir von einer Abmahnung abzusehen. Es genügt eine Mitteilung an <a href="mailto:niki.mitlaender@gmail.com">niki.mitlaender@gmail.com</a> und wir entfernen solche Inhalte umgehend.
+                </p>
+
+                <h2>Finanzinformation</h2>
+                <p>
+                    Dieses Projekt ist nicht-kommerziell und ausschließlich für gemeinwirtschaftliche Zwecke bestimmt. Sämtliche Geldschenkungen werden ausschließlich zur Deckung der entstandenen und zukünftigen Kosten genutzt. Wir haben keinerlei Gewinn- oder Einkunftsabsichten.
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer Section (Dynamically Loaded) -->
+    <footer id="footer"></footer>
+
+    <!-- Cookie/Data Banner Section (Dynamically Loaded) -->
+    <div id="databanner"></div>
+
+</body>
+</html>

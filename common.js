@@ -129,23 +129,7 @@ function init_header() {
 }
 
 function init_footer() {
-    // Connect legal links if pages exist or intercept with modal/notices
-    const linkImpressum = document.getElementById("linkImpressum");
-    const linkDatenschutz = document.getElementById("linkDatenschutz");
-
-    if (linkImpressum) {
-        linkImpressum.addEventListener("click", (e) => {
-            e.preventDefault();
-            alert("Impressum:\n\nGemeinwirtschaftliche Arbeitenden-Assoziation (GAA)\nVerein in Gründung\nE-Mail: info@gaa-coop.de\nStand: Mai 2026");
-        });
-    }
-
-    if (linkDatenschutz) {
-        linkDatenschutz.addEventListener("click", (e) => {
-            e.preventDefault();
-            alert("Datenschutzerklärung:\n\nWir speichern personenbezogene Daten (Name, E-Mail) ausschließlich zum Zwecke der Kontaktaufnahme auf Grundlage Ihrer Einwilligung. Es werden keine Daten an Dritte weitergegeben.");
-        });
-    }
+    // Left empty to allow normal navigation to impressum.html and datenschutz.html
 }
 
 function init_cookies() {
@@ -308,11 +292,17 @@ function init_join_form() {
             const emailInput = document.getElementById("formEmail");
             const stadtInput = document.getElementById("formStadt");
             const messageInput = document.getElementById("formMessage");
+            const acceptPrivacyInput = document.getElementById("formAcceptPrivacy");
             const submitBtn = form.querySelector(".btn-form-submit");
 
             // Frontend validation
             if (!nameInput.value.trim() || !emailInput.value.trim() || !stadtInput.value.trim()) {
                 alert("Bitte füllen Sie Name, E-Mail und Stadt aus.");
+                return;
+            }
+
+            if (!acceptPrivacyInput || !acceptPrivacyInput.checked) {
+                alert("Bitte lesen und akzeptieren Sie die Datenschutzerklärung.");
                 return;
             }
 
