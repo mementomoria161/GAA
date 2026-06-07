@@ -205,7 +205,7 @@ a {
 
 @media (max-width: 768px) {
     :root {
-        --container-padding: 1.25rem;
+        --container-padding: 1.75rem;
     }
     .grid-4, .grid-3 {
         grid-template-columns: 1fr;
