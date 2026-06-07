@@ -99,6 +99,26 @@ function init_header() {
     const navbarMenu = document.getElementById("navbarMenu");
     const navLinks = document.querySelectorAll(".nav-link");
 
+    const isHomePage = window.location.pathname === "/" || window.location.pathname.endsWith("/index.html") || window.location.pathname === "" || !window.location.pathname.includes(".html");
+
+    if (isHomePage) {
+        // If on the home page, set links to local hash targets for smooth page-scroll
+        const brandLink = document.querySelector(".brand");
+        if (brandLink) {
+            brandLink.setAttribute("href", "#hero");
+        }
+        const ctaBtn = document.querySelector(".btn-cta");
+        if (ctaBtn) {
+            ctaBtn.setAttribute("href", "#mitmachen");
+        }
+        navLinks.forEach(link => {
+            const href = link.getAttribute("href");
+            if (href && href.startsWith("./#")) {
+                link.setAttribute("href", href.substring(2)); // keep only the #hash part
+            }
+        });
+    }
+
     if (navToggle && navbarMenu) {
         // Mobile Toggle Click Handler
         navToggle.addEventListener("click", () => {

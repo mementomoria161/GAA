@@ -527,7 +527,7 @@
 
 .pillar-card-body {
     font-size: 1rem;
-    line-height: 1.6;
+    line-height: 1.65;
 }
 
 /* --------------------------------------------------------------------------
@@ -1162,5 +1162,14 @@ textarea.form-control {
     .pillar-card,
     .goal-card {
         padding: 2rem 1.5rem;
+    }
+}
+
+@media (max-width: 1024px) and (min-width: 769px) {
+    .pillar-card:nth-child(3) {
+        grid-column: span 2;
+        justify-self: center;
+        max-width: calc(50% - 1.25rem);
+        width: 100%;
     }
 }
