@@ -88,16 +88,6 @@ function init() {
     init_scroll_reveal();
     init_hero_effect();
     init_breadcrumb_trail();
-
-    // Scroll to hash if present in URL after dynamic components are loaded
-    if (window.location.hash) {
-        const target = document.querySelector(window.location.hash);
-        if (target) {
-            setTimeout(() => {
-                target.scrollIntoView({ behavior: "smooth" });
-            }, 150);
-        }
-    }
 }
 
 /* ==========================================================================
@@ -109,9 +99,10 @@ function init_header() {
     const navbarMenu = document.getElementById("navbarMenu");
     const navLinks = document.querySelectorAll(".nav-link");
 
-    // Dynamic home page link optimization to prevent page reloads
     const isHomePage = window.location.pathname === "/" || window.location.pathname.endsWith("/index.html") || window.location.pathname === "" || !window.location.pathname.includes(".html");
+
     if (isHomePage) {
+        // If on the home page, set links to local hash targets for smooth page-scroll
         const brandLink = document.querySelector(".brand");
         if (brandLink) {
             brandLink.setAttribute("href", "#hero");
@@ -122,8 +113,8 @@ function init_header() {
         }
         navLinks.forEach(link => {
             const href = link.getAttribute("href");
-            if (href && href.startsWith("index.html#")) {
-                link.setAttribute("href", href.substring(10)); // keep only the #hash part
+            if (href && href.startsWith("./#")) {
+                link.setAttribute("href", href.substring(2)); // keep only the #hash part
             }
         });
     }
