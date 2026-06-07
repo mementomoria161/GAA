@@ -129,23 +129,7 @@ function init_header() {
 }
 
 function init_footer() {
-    // Connect legal links if pages exist or intercept with modal/notices
-    const linkImpressum = document.getElementById("linkImpressum");
-    const linkDatenschutz = document.getElementById("linkDatenschutz");
-
-    if (linkImpressum) {
-        linkImpressum.addEventListener("click", (e) => {
-            e.preventDefault();
-            alert("Impressum:\n\nGemeinwirtschaftliche Arbeitenden-Assoziation (GAA)\nVerein in Gründung\nE-Mail: info@gaa-coop.de\nStand: Mai 2026");
-        });
-    }
-
-    if (linkDatenschutz) {
-        linkDatenschutz.addEventListener("click", (e) => {
-            e.preventDefault();
-            alert("Datenschutzerklärung:\n\nWir speichern personenbezogene Daten (Name, E-Mail) ausschließlich zum Zwecke der Kontaktaufnahme auf Grundlage Ihrer Einwilligung. Es werden keine Daten an Dritte weitergegeben.");
-        });
-    }
+    // Left empty to allow normal navigation to impressum.html and datenschutz.html
 }
 
 function init_cookies() {
@@ -308,11 +292,17 @@ function init_join_form() {
             const emailInput = document.getElementById("formEmail");
             const stadtInput = document.getElementById("formStadt");
             const messageInput = document.getElementById("formMessage");
+            const acceptPrivacyInput = document.getElementById("formAcceptPrivacy");
             const submitBtn = form.querySelector(".btn-form-submit");
 
             // Frontend validation
             if (!nameInput.value.trim() || !emailInput.value.trim() || !stadtInput.value.trim()) {
                 alert("Bitte füllen Sie Name, E-Mail und Stadt aus.");
+                return;
+            }
+
+            if (!acceptPrivacyInput || !acceptPrivacyInput.checked) {
+                alert("Bitte lesen und akzeptieren Sie die Datenschutzerklärung.");
                 return;
             }
 
@@ -406,9 +396,9 @@ function init_hero_effect() {
     const vnorm = { x: -0.788, y: 0.616 };
     const unorm = { x: -0.616, y: -0.788 };
 
-    // 1. Hammer Handle (R = 12 rings, S = 6 segments per ring -> 72 vertices)
-    const hh_R = 12;
-    const hh_S = 6;
+    // 1. Hammer Handle (R = 8 rings, S = 4 segments per ring -> 32 vertices)
+    const hh_R = 8;
+    const hh_S = 4;
     const hh_offset = baseParticles.length;
     for (let k = 0; k < hh_R; k++) {
         const t = k / (hh_R - 1);
@@ -436,8 +426,8 @@ function init_hero_effect() {
         }
     }
 
-    // 2. Hammer Head (R = 12 slices, S = 4 segments per slice -> 48 vertices)
-    const hhead_R = 12;
+    // 2. Hammer Head (R = 8 slices, S = 4 segments per slice -> 32 vertices)
+    const hhead_R = 8;
     const hhead_S = 4;
     const hhead_offset = baseParticles.length;
     const hhead_vnorm = { x: 0.788, y: -0.616 }; 
@@ -493,9 +483,9 @@ function init_hero_effect() {
         color: '#F6BAFF'
     });
 
-    // 3. Sickle Blade (M = 24 steps along arc, N = 5 steps across width, 2 layers -> 240 vertices)
-    const sb_M = 24;
-    const sb_N = 5;
+    // 3. Sickle Blade (M = 16 steps along arc, N = 3 steps across width, 2 layers -> 96 vertices)
+    const sb_M = 16;
+    const sb_N = 3;
     const sb_offset = baseParticles.length;
     const alphaStart = 0.72 * Math.PI;
     const alphaEnd = -0.82 * Math.PI; // Sweeps clockwise from bottom-left to top-left
@@ -571,9 +561,9 @@ function init_hero_effect() {
         baseFaces.push({ indices: [tip_f0, tip_f1, tip_b1, tip_b0], color: '#F6BAFF' });
     }
 
-    // 4. Sickle Handle (R = 10 rings, S = 6 segments per ring -> 60 vertices)
-    const sh_R = 10;
-    const sh_S = 6;
+    // 4. Sickle Handle (R = 6 rings, S = 4 segments per ring -> 24 vertices)
+    const sh_R = 6;
+    const sh_S = 4;
     const sh_offset = baseParticles.length;
     const sh_vnorm = { x: 0.707, y: 0.707 }; // Perpendicular frame for handle tilted bottom-left to top-right
     
@@ -639,11 +629,49 @@ function init_hero_effect() {
         mouse.active = false;
     });
 
+    // Pre-allocate arrays and objects to avoid GC overhead
+    const projected = [];
+    for (let i = 0; i < baseParticles.length; i++) {
+        projected.push({ x: 0, y: 0, z: 0, scale: 0, color: baseParticles[i].color });
+    }
+
+    const facesWithDepth = [];
+    for (let i = 0; i < baseFaces.length; i++) {
+        facesWithDepth.push({ indices: baseFaces[i].indices, avgZ: 0, avgScale: 0, color: baseFaces[i].color });
+    }
+
+    // Bucket arrays pre-allocated
+    const bucketBackFaces = [];
+    const bucketMidFaces = [];
+    const bucketFrontFaces = [];
+    
+    const bucketBackParticles = [];
+    const bucketMidParticles = [];
+    const bucketFrontParticles = [];
+
     let angleX = 0;
     let angleY = 0;
     let time = 0;
+    let animationFrameId = null;
+    let isCanvasVisible = true;
+
+    function getBucketParams(scale) {
+        const alpha = Math.max(0.02, Math.min(0.24, (scale - 0.5) * 0.14));
+        return {
+            fillStyle: `rgba(76, 29, 159, ${alpha * 0.45})`,
+            strokeStyleOrange: `rgba(247, 155, 6, ${alpha * 1.35})`,
+            strokeStylePurple: `rgba(246, 186, 255, ${alpha * 1.35})`,
+            lineWidth: 0.5 * scale,
+            particleAlpha: Math.max(0.12, Math.min(0.8, (scale - 0.4) * 0.45))
+        };
+    }
 
     function animate() {
+        if (!isCanvasVisible) {
+            animationFrameId = null;
+            return;
+        }
+
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         angleY += 0.0006;
@@ -656,14 +684,13 @@ function init_hero_effect() {
         const baseRadius = Math.min(canvas.width, canvas.height) * 0.60;
         const waveAmp = baseRadius * 0.025;
 
-            const cosX = Math.cos(angleX);
+        const cosX = Math.cos(angleX);
         const sinX = Math.sin(angleX);
         const cosY = Math.cos(angleY);
         const sinY = Math.sin(angleY);
 
-        const projected = [];
-
         // Project and morph vertices
+        const mouseRadiusSq = mouse.radius * mouse.radius;
         for (let i = 0; i < baseParticles.length; i++) {
             const p = baseParticles[i];
 
@@ -702,15 +729,16 @@ function init_hero_effect() {
             p.vx -= p.offX * p.spring;
             p.vy -= p.offY * p.spring;
 
-            // Apply mouse repulsion force
+            // Apply mouse repulsion force (optimized with squared distance check first)
             if (mouse.active && mouse.x !== null && mouse.y !== null) {
                 const currentScreenX = baseScreenX + p.offX;
                 const currentScreenY = baseScreenY + p.offY;
                 const dx = currentScreenX - mouse.x;
                 const dy = currentScreenY - mouse.y;
-                const dist = Math.sqrt(dx * dx + dy * dy);
+                const distSq = dx * dx + dy * dy;
 
-                if (dist < mouse.radius && dist > 0.1) {
+                if (distSq < mouseRadiusSq && distSq > 0.01) {
+                    const dist = Math.sqrt(distSq);
                     const force = (1 - dist / mouse.radius);
                     p.vx += (dx / dist) * force * force * 2.2 * p.sensitivity;
                     p.vy += (dy / dist) * force * force * 2.2 * p.sensitivity;
@@ -725,90 +753,201 @@ function init_hero_effect() {
             p.offX += p.vx;
             p.offY += p.vy;
 
-            let screenX = baseScreenX + p.offX;
-            let screenY = baseScreenY + p.offY;
-
-            projected.push({
-                x: screenX,
-                y: screenY,
-                z: zRotX,
-                scale: scaleFactor,
-                color: p.color
-            });
+            // Update projected array in place
+            const proj = projected[i];
+            proj.x = baseScreenX + p.offX;
+            proj.y = baseScreenY + p.offY;
+            proj.z = zRotX;
+            proj.scale = scaleFactor;
         }
 
-        // Depth-sort faces back-to-front (Painter's Algorithm)
-        const facesWithDepth = [];
+        // Calculate face depth values in place
         for (let i = 0; i < baseFaces.length; i++) {
             const f = baseFaces[i];
+            const faceDepth = facesWithDepth[i];
             const p0 = projected[f.indices[0]];
             const p1 = projected[f.indices[1]];
             const p2 = projected[f.indices[2]];
             const p3 = projected[f.indices[3]];
 
-            const avgZ = (p0.z + p1.z + p2.z + p3.z) / 4;
-            const avgScale = (p0.scale + p1.scale + p2.scale + p3.scale) / 4;
-
-            facesWithDepth.push({
-                indices: f.indices,
-                avgZ: avgZ,
-                avgScale: avgScale,
-                color: f.color
-            });
+            faceDepth.avgZ = (p0.z + p1.z + p2.z + p3.z) * 0.25;
+            faceDepth.avgScale = (p0.scale + p1.scale + p2.scale + p3.scale) * 0.25;
         }
-        facesWithDepth.sort((a, b) => b.avgZ - a.avgZ);
 
-        // Draw faces
+        // Clear bucket arrays (without reallocation)
+        bucketBackFaces.length = 0;
+        bucketMidFaces.length = 0;
+        bucketFrontFaces.length = 0;
+
+        bucketBackParticles.length = 0;
+        bucketMidParticles.length = 0;
+        bucketFrontParticles.length = 0;
+
+        // Bucket faces based on depth (no sorting required!)
         for (let i = 0; i < facesWithDepth.length; i++) {
             const f = facesWithDepth[i];
-            const p0 = projected[f.indices[0]];
-            const p1 = projected[f.indices[1]];
-            const p2 = projected[f.indices[2]];
-            const p3 = projected[f.indices[3]];
-
-            ctx.beginPath();
-            ctx.moveTo(p0.x, p0.y);
-            ctx.lineTo(p1.x, p1.y);
-            ctx.lineTo(p2.x, p2.y);
-            ctx.lineTo(p3.x, p3.y);
-            ctx.closePath();
-
-            const alpha = Math.max(0.02, Math.min(0.24, (f.avgScale - 0.5) * 0.14));
-
-            // Translucent deep purple facet surface fill
-            ctx.fillStyle = `rgba(76, 29, 159, ${alpha * 0.45})`;
-            ctx.fill();
-
-            // Glowing wireframe edges
-            ctx.strokeStyle = f.color === '#F79B06' 
-                ? `rgba(247, 155, 6, ${alpha * 1.35})` 
-                : `rgba(246, 186, 255, ${alpha * 1.35})`;
-            ctx.lineWidth = 0.5 * f.avgScale;
-            ctx.stroke();
+            const scale = f.avgScale;
+            if (scale < 0.9) {
+                bucketBackFaces.push(f);
+            } else if (scale < 1.25) {
+                bucketMidFaces.push(f);
+            } else {
+                bucketFrontFaces.push(f);
+            }
         }
 
-        // Draw coordinate particles on top
+        // Bucket particles based on depth
         for (let i = 0; i < projected.length; i++) {
             const p = projected[i];
-            const baseSize = p.color === '#F79B06' ? 0.95 : 0.65;
-            const size = baseSize * p.scale;
-            
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, size, 0, Math.PI * 2);
-            
-            const alpha = Math.max(0.12, Math.min(0.8, (p.scale - 0.4) * 0.45));
-            if (p.color === '#F79B06') {
-                ctx.fillStyle = `rgba(247, 155, 6, ${alpha * 1.2})`;
+            const scale = p.scale;
+            if (scale < 0.9) {
+                bucketBackParticles.push(p);
+            } else if (scale < 1.25) {
+                bucketMidParticles.push(p);
             } else {
-                ctx.fillStyle = `rgba(246, 186, 255, ${alpha * 1.2})`;
+                bucketFrontParticles.push(p);
             }
-            ctx.fill();
         }
 
-        requestAnimationFrame(animate);
+        // Draw depth layers (Back -> Mid -> Front)
+        const layers = [
+            { faces: bucketBackFaces, particles: bucketBackParticles, scale: 0.8 },
+            { faces: bucketMidFaces, particles: bucketMidParticles, scale: 1.05 },
+            { faces: bucketFrontFaces, particles: bucketFrontParticles, scale: 1.4 }
+        ];
+
+        for (let l = 0; l < 3; l++) {
+            const layer = layers[l];
+            const faces = layer.faces;
+            const particles = layer.particles;
+            if (faces.length === 0 && particles.length === 0) continue;
+
+            const params = getBucketParams(layer.scale);
+
+            // 1. Draw layer faces (Fills)
+            if (faces.length > 0) {
+                ctx.beginPath();
+                for (let i = 0; i < faces.length; i++) {
+                    const f = faces[i];
+                    const p0 = projected[f.indices[0]];
+                    const p1 = projected[f.indices[1]];
+                    const p2 = projected[f.indices[2]];
+                    const p3 = projected[f.indices[3]];
+                    ctx.moveTo(p0.x, p0.y);
+                    ctx.lineTo(p1.x, p1.y);
+                    ctx.lineTo(p2.x, p2.y);
+                    ctx.lineTo(p3.x, p3.y);
+                    ctx.closePath();
+                }
+                ctx.fillStyle = params.fillStyle;
+                ctx.fill();
+
+                // 2. Draw layer faces (Orange Strokes)
+                ctx.beginPath();
+                let hasOrangeStrokes = false;
+                for (let i = 0; i < faces.length; i++) {
+                    const f = faces[i];
+                    if (f.color === '#F79B06') {
+                        hasOrangeStrokes = true;
+                        const p0 = projected[f.indices[0]];
+                        const p1 = projected[f.indices[1]];
+                        const p2 = projected[f.indices[2]];
+                        const p3 = projected[f.indices[3]];
+                        ctx.moveTo(p0.x, p0.y);
+                        ctx.lineTo(p1.x, p1.y);
+                        ctx.lineTo(p2.x, p2.y);
+                        ctx.lineTo(p3.x, p3.y);
+                        ctx.closePath();
+                    }
+                }
+                if (hasOrangeStrokes) {
+                    ctx.strokeStyle = params.strokeStyleOrange;
+                    ctx.lineWidth = params.lineWidth;
+                    ctx.stroke();
+                }
+
+                // 3. Draw layer faces (Purple/Pink Strokes)
+                ctx.beginPath();
+                let hasPurpleStrokes = false;
+                for (let i = 0; i < faces.length; i++) {
+                    const f = faces[i];
+                    if (f.color !== '#F79B06') {
+                        hasPurpleStrokes = true;
+                        const p0 = projected[f.indices[0]];
+                        const p1 = projected[f.indices[1]];
+                        const p2 = projected[f.indices[2]];
+                        const p3 = projected[f.indices[3]];
+                        ctx.moveTo(p0.x, p0.y);
+                        ctx.lineTo(p1.x, p1.y);
+                        ctx.lineTo(p2.x, p2.y);
+                        ctx.lineTo(p3.x, p3.y);
+                        ctx.closePath();
+                    }
+                }
+                if (hasPurpleStrokes) {
+                    ctx.strokeStyle = params.strokeStylePurple;
+                    ctx.lineWidth = params.lineWidth;
+                    ctx.stroke();
+                }
+            }
+
+            // 4. Draw layer particles (Orange Fills)
+            if (particles.length > 0) {
+                ctx.beginPath();
+                let hasOrangeParticles = false;
+                for (let i = 0; i < particles.length; i++) {
+                    const p = particles[i];
+                    if (p.color === '#F79B06') {
+                        hasOrangeParticles = true;
+                        const size = 0.95 * p.scale;
+                        ctx.moveTo(p.x + size, p.y);
+                        ctx.arc(p.x, p.y, size, 0, Math.PI * 2);
+                    }
+                }
+                if (hasOrangeParticles) {
+                    ctx.fillStyle = `rgba(247, 155, 6, ${params.particleAlpha * 1.2})`;
+                    ctx.fill();
+                }
+
+                // 5. Draw layer particles (Purple/Pink Fills)
+                ctx.beginPath();
+                let hasPurpleParticles = false;
+                for (let i = 0; i < particles.length; i++) {
+                    const p = particles[i];
+                    if (p.color !== '#F79B06') {
+                        hasPurpleParticles = true;
+                        const size = 0.65 * p.scale;
+                        ctx.moveTo(p.x + size, p.y);
+                        ctx.arc(p.x, p.y, size, 0, Math.PI * 2);
+                    }
+                }
+                if (hasPurpleParticles) {
+                    ctx.fillStyle = `rgba(246, 186, 255, ${params.particleAlpha * 1.2})`;
+                    ctx.fill();
+                }
+            }
+        }
+
+        animationFrameId = requestAnimationFrame(animate);
     }
 
-    animate();
+    // Set up IntersectionObserver to pause when the canvas is off-screen
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            isCanvasVisible = entry.isIntersecting;
+            if (isCanvasVisible) {
+                if (!animationFrameId) {
+                    animationFrameId = requestAnimationFrame(animate);
+                }
+            } else {
+                if (animationFrameId) {
+                    cancelAnimationFrame(animationFrameId);
+                    animationFrameId = null;
+                }
+            }
+        });
+    }, { threshold: 0.01 });
+    observer.observe(canvas);
 }
 
 /* ==========================================================================
