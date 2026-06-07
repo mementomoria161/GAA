@@ -396,9 +396,49 @@ function init_hero_effect() {
     const vnorm = { x: -0.788, y: 0.616 };
     const unorm = { x: -0.616, y: -0.788 };
 
-    // 1. Hammer Handle (R = 8 rings, S = 4 segments per ring -> 32 vertices)
-    const hh_R = 8;
-    const hh_S = 4;
+    // Performance detection to adjust polygon resolution dynamically
+    const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+    const cores = navigator.hardwareConcurrency || 4;
+    
+    // Quality settings (rings R, segments S, etc.)
+    let hh_R, hh_S, hhead_R, hhead_S, sb_M, sb_N, sh_R, sh_S;
+    
+    if (!isMobile && cores >= 8) {
+        // High Performance (Power desktops/laptops)
+        hh_R = 12;
+        hh_S = 6;
+        hhead_R = 12;
+        hhead_S = 4; // Must be exactly 4 (due to rectangular corners array and end-cap indices)
+        sb_M = 24;
+        sb_N = 4;
+        sh_R = 10;
+        sh_S = 6;
+        console.log("GAA Canvas Quality: HIGH (" + cores + " cores, desktop)");
+    } else if (isMobile || cores <= 2) {
+        // Low Performance (Mobile or dual-core desktops)
+        hh_R = 6;
+        hh_S = 3;
+        hhead_R = 6;
+        hhead_S = 4; // Must be exactly 4
+        sb_M = 12;
+        sb_N = 2;
+        sh_R = 4;
+        sh_S = 3;
+        console.log("GAA Canvas Quality: LOW (mobile or low-end device)");
+    } else {
+        // Medium / Standard Performance
+        hh_R = 8;
+        hh_S = 4;
+        hhead_R = 8;
+        hhead_S = 4;
+        sb_M = 16;
+        sb_N = 3;
+        sh_R = 6;
+        sh_S = 4;
+        console.log("GAA Canvas Quality: MEDIUM (standard desktop/laptop)");
+    }
+
+    // 1. Hammer Handle (R = rings, S = segments per ring)
     const hh_offset = baseParticles.length;
     for (let k = 0; k < hh_R; k++) {
         const t = k / (hh_R - 1);
@@ -427,8 +467,6 @@ function init_hero_effect() {
     }
 
     // 2. Hammer Head (R = 8 slices, S = 4 segments per slice -> 32 vertices)
-    const hhead_R = 8;
-    const hhead_S = 4;
     const hhead_offset = baseParticles.length;
     const hhead_vnorm = { x: 0.788, y: -0.616 }; 
     const hhead_unorm = { x: -0.616, y: -0.788 }; 
@@ -484,8 +522,6 @@ function init_hero_effect() {
     });
 
     // 3. Sickle Blade (M = 16 steps along arc, N = 3 steps across width, 2 layers -> 96 vertices)
-    const sb_M = 16;
-    const sb_N = 3;
     const sb_offset = baseParticles.length;
     const alphaStart = 0.72 * Math.PI;
     const alphaEnd = -0.82 * Math.PI; // Sweeps clockwise from bottom-left to top-left
@@ -562,8 +598,6 @@ function init_hero_effect() {
     }
 
     // 4. Sickle Handle (R = 6 rings, S = 4 segments per ring -> 24 vertices)
-    const sh_R = 6;
-    const sh_S = 4;
     const sh_offset = baseParticles.length;
     const sh_vnorm = { x: 0.707, y: 0.707 }; // Perpendicular frame for handle tilted bottom-left to top-right
     
@@ -656,12 +690,14 @@ function init_hero_effect() {
     let isCanvasVisible = true;
 
     function getBucketParams(scale) {
+        const isMobile = window.innerWidth <= 768;
         const alpha = Math.max(0.02, Math.min(0.24, (scale - 0.5) * 0.14));
+        const thicknessMultiplier = isMobile ? 2.5 : 1.0;
         return {
             fillStyle: `rgba(76, 29, 159, ${alpha * 0.45})`,
-            strokeStyleOrange: `rgba(247, 155, 6, ${alpha * 1.35})`,
-            strokeStylePurple: `rgba(246, 186, 255, ${alpha * 1.35})`,
-            lineWidth: 0.5 * scale,
+            strokeStyleOrange: `rgba(247, 155, 6, ${alpha * (isMobile ? 1.8 : 1.35)})`,
+            strokeStylePurple: `rgba(246, 186, 255, ${alpha * (isMobile ? 1.8 : 1.35)})`,
+            lineWidth: 0.5 * scale * thicknessMultiplier,
             particleAlpha: Math.max(0.12, Math.min(0.8, (scale - 0.4) * 0.45))
         };
     }
@@ -681,7 +717,8 @@ function init_hero_effect() {
         const centerX = canvas.width / 2;
         const centerY = canvas.height / 2;
 
-        const baseRadius = Math.min(canvas.width, canvas.height) * 0.60;
+        const isMobile = window.innerWidth <= 768;
+        const baseRadius = Math.min(canvas.width, canvas.height) * (isMobile ? 0.85 : 0.60);
         const waveAmp = baseRadius * 0.025;
 
         const cosX = Math.cos(angleX);
@@ -899,7 +936,7 @@ function init_hero_effect() {
                     const p = particles[i];
                     if (p.color === '#F79B06') {
                         hasOrangeParticles = true;
-                        const size = 0.95 * p.scale;
+                        const size = 0.95 * p.scale * (isMobile ? 1.8 : 1.0);
                         ctx.moveTo(p.x + size, p.y);
                         ctx.arc(p.x, p.y, size, 0, Math.PI * 2);
                     }
@@ -916,7 +953,7 @@ function init_hero_effect() {
                     const p = particles[i];
                     if (p.color !== '#F79B06') {
                         hasPurpleParticles = true;
-                        const size = 0.65 * p.scale;
+                        const size = 0.65 * p.scale * (isMobile ? 1.8 : 1.0);
                         ctx.moveTo(p.x + size, p.y);
                         ctx.arc(p.x, p.y, size, 0, Math.PI * 2);
                     }
