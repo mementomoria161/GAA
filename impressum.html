@@ -32,96 +32,14 @@
         load_components(["header", "footer", "databanner"]);
     </script>
     
-    <style>
-        #content {
-            padding-top: calc(var(--header-height) + 4rem);
-            padding-bottom: 6rem;
-            background: radial-gradient(circle at 50% 30%, rgba(246, 186, 255, 0.08) 0%, transparent 60%),
-                        radial-gradient(circle at 10% 80%, rgba(247, 155, 6, 0.04) 0%, transparent 40%),
-                        var(--color-bg-dark);
-            min-height: 100vh;
-        }
-        
-        .legal-card {
-            background-color: var(--color-contrast-1) !important;
-            color: var(--text-on-light);
-            padding: 4rem 3rem;
-            border-radius: 16px;
-            border: 3px solid var(--color-primary);
-            box-shadow: 8px 8px 0px var(--color-primary);
-            margin: 0 auto;
-            max-width: 900px;
-        }
-
-        .legal-card h1 {
-            font-size: clamp(2rem, 4vw, 3rem);
-            color: var(--color-primary);
-            margin-bottom: 2rem;
-            text-align: center;
-        }
-
-        .legal-card h2 {
-            font-size: 1.5rem;
-            color: var(--color-primary);
-            margin-top: 3rem;
-            margin-bottom: 1.25rem;
-            border-bottom: 2px solid rgba(76, 29, 159, 0.1);
-            padding-bottom: 0.5rem;
-        }
-
-        .legal-card p {
-            font-size: 1rem;
-            line-height: 1.65;
-            margin-bottom: 1.5rem;
-        }
-
-        .legal-card a {
-            color: var(--color-primary);
-            text-decoration: underline;
-            font-weight: 700;
-        }
-
-        .legal-card a:hover {
-            color: var(--color-accent);
-        }
-
-        .cc-container {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            margin-top: 1rem;
-        }
-
-        .cc-container img {
-            height: 32px;
-            width: auto;
-        }
-
-        @media (max-width: 600px) {
-            .legal-card {
-                padding: 2.5rem 1.5rem;
-            }
-        }
-
-        #footer {
-            background-color: var(--color-primary) !important;
-            color: var(--color-contrast-1) !important;
-        }
-        #footer .footer-link {
-            color: var(--color-contrast-1) !important;
-        }
-        #footer .footer-link:hover {
-            color: var(--color-accent) !important;
-        }
-    </style>
 </head>
-<body>
+<body class="legal-page">
 
     <!-- Header Section (Dynamically Loaded) -->
     <header id="header"></header>
 
     <!-- Main Content Container -->
-    <main id="content">
+    <main id="content" class="legal-content">
         <div class="container">
             <div class="legal-card">
                 <h1>Impressum</h1>
