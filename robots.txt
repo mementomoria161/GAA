@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://gaa-assoziation.de/sitemap.xml
+Sitemap: https://www.gaa-coop.de/sitemap.xml
