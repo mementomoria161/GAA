@@ -88,6 +88,7 @@ function init() {
     init_scroll_reveal();
     init_hero_effect();
     init_breadcrumb_trail();
+    init_vision_video();
 }
 
 /* ==========================================================================
@@ -1040,4 +1041,152 @@ function init_breadcrumb_trail() {
     window.addEventListener("scroll", updateTrail);
     window.addEventListener("resize", updateTrail);
     updateTrail(); // Initial call
+}
+
+/* ==========================================================================
+   VISION VIDEO CUSTOM PLAYER HANDLER
+   ========================================================================== */
+function init_vision_video() {
+    const container = document.querySelector(".video-container");
+    if (!container) return;
+
+    const video = container.querySelector(".vision-video");
+    const playBtn = container.querySelector(".custom-play-button");
+    const controls = container.querySelector(".custom-video-controls");
+    if (!video || !playBtn || !controls) return;
+
+    const playPauseBtn = controls.querySelector(".play-pause-btn");
+    const playIcon = playPauseBtn.querySelector(".play-icon");
+    const pauseIcon = playPauseBtn.querySelector(".pause-icon");
+    const muteBtn = controls.querySelector(".mute-btn");
+    const volumeHighIcon = muteBtn.querySelector(".volume-high-icon");
+    const volumeMuteIcon = muteBtn.querySelector(".volume-mute-icon");
+    const fullscreenBtn = controls.querySelector(".fullscreen-btn");
+    const timeDisplay = controls.querySelector(".time-display");
+    const progressBarFill = controls.querySelector(".progress-bar-fill");
+    const progressSlider = controls.querySelector(".progress-slider");
+
+    // Format time (seconds to MM:SS)
+    const formatTime = (secs) => {
+        const minutes = Math.floor(secs / 60);
+        const seconds = Math.floor(secs % 60);
+        return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    };
+
+    // Update time and progress bar
+    const updateProgress = () => {
+        if (video.duration) {
+            const percentage = (video.currentTime / video.duration) * 100;
+            progressBarFill.style.width = `${percentage}%`;
+            progressSlider.value = percentage;
+            timeDisplay.textContent = `${formatTime(video.currentTime)} / ${formatTime(video.duration)}`;
+        }
+    };
+
+    // Play & Pause handlers
+    const setPlayState = (playing) => {
+        if (playing) {
+            video.play();
+            container.classList.add("playing");
+            playIcon.style.display = "none";
+            pauseIcon.style.display = "block";
+            showControlsTemporarily();
+        } else {
+            video.pause();
+            playIcon.style.display = "block";
+            pauseIcon.style.display = "none";
+            container.classList.add("show-controls");
+            container.classList.remove("hide-cursor");
+            clearTimeout(hideTimeout);
+        }
+    };
+
+    // Initialize time display once metadata is loaded
+    video.addEventListener("loadedmetadata", () => {
+        timeDisplay.textContent = `0:00 / ${formatTime(video.duration)}`;
+    });
+
+    // Fallback if metadata is already loaded
+    if (video.readyState >= 1) {
+        timeDisplay.textContent = `0:00 / ${formatTime(video.duration)}`;
+    }
+
+    // Toggle play/pause
+    playBtn.addEventListener("click", () => {
+        setPlayState(true);
+    });
+
+    playPauseBtn.addEventListener("click", () => {
+        setPlayState(video.paused);
+    });
+
+    video.addEventListener("click", () => {
+        setPlayState(video.paused);
+    });
+
+    video.addEventListener("timeupdate", updateProgress);
+
+    // Scrub video
+    progressSlider.addEventListener("input", () => {
+        const time = (progressSlider.value / 100) * video.duration;
+        video.currentTime = time;
+        progressBarFill.style.width = `${progressSlider.value}%`;
+    });
+
+    // Mute/Unmute
+    muteBtn.addEventListener("click", () => {
+        video.muted = !video.muted;
+        if (video.muted) {
+            volumeHighIcon.style.display = "none";
+            volumeMuteIcon.style.display = "block";
+        } else {
+            volumeHighIcon.style.display = "block";
+            volumeMuteIcon.style.display = "none";
+        }
+    });
+
+    // Fullscreen
+    fullscreenBtn.addEventListener("click", () => {
+        if (!document.fullscreenElement) {
+            container.requestFullscreen().catch(err => {
+                video.requestFullscreen();
+            });
+        } else {
+            document.exitFullscreen();
+        }
+    });
+
+    // Ended handler
+    video.addEventListener("ended", () => {
+        setPlayState(false);
+        container.classList.remove("playing");
+        container.classList.remove("hide-cursor");
+        progressBarFill.style.width = "0%";
+        progressSlider.value = 0;
+    });
+
+    // Controls Auto-Hide Behavior
+    let hideTimeout;
+    const showControlsTemporarily = () => {
+        container.classList.add("show-controls");
+        container.classList.remove("hide-cursor");
+        clearTimeout(hideTimeout);
+        if (!video.paused) {
+            hideTimeout = setTimeout(() => {
+                container.classList.remove("show-controls");
+                container.classList.add("hide-cursor");
+            }, 2000);
+        }
+    };
+
+    container.addEventListener("mousemove", showControlsTemporarily);
+    container.addEventListener("click", showControlsTemporarily);
+    
+    container.addEventListener("mouseleave", () => {
+        if (!video.paused) {
+            container.classList.remove("show-controls");
+            container.classList.add("hide-cursor");
+            clearTimeout(hideTimeout);
+        }
+    });
 }
