@@ -219,12 +219,11 @@ a {
 /* ==========================================================================
    CURVED SECTION ARROWS
    ========================================================================== */
-#ausgangslage, #vision, #saeulen {
+#vision, #saeulen {
     overflow: visible;
 }
 
-#ausgangslage .context-wrapper,
-#vision .vision-wrapper,
+#vision .vision-combined-wrapper,
 #saeulen .container {
     position: relative;
 }

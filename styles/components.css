@@ -327,13 +327,13 @@
 }
 
 .hero-text {
-    max-width: 850px;
+    max-width: 1100px;
     position: relative;
     z-index: 2;
 }
 
 .hero-headline {
-    font-size: clamp(2.5rem, 6vw, 4.8rem);
+    font-size: clamp(3rem, 7.5vw, 5.8rem);
     margin-bottom: 2rem;
     line-height: 1.05;
     background: linear-gradient(135deg, #FFFFFF 60%, var(--color-contrast-1) 100%);
@@ -342,10 +342,14 @@
 }
 
 .hero-subline {
-    font-size: clamp(1.1rem, 1.7vw, 1.25rem);
+    font-size: clamp(1.45rem, 2.4vw, 1.7rem);
+    font-weight: 200;
     line-height: 1.6;
     margin-bottom: 3rem;
     opacity: 0.95;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .hero-actions {
@@ -369,13 +373,6 @@
     pointer-events: auto;
 }
 
-/* --------------------------------------------------------------------------
-   CONTEXT SECTION
-   -------------------------------------------------------------------------- */
-.context-wrapper {
-    max-width: 900px;
-    margin: 0 auto;
-}
 
 .context-title,
 .pillars-headline,
@@ -413,6 +410,11 @@
     box-shadow: 12px 12px 0px var(--color-primary);
     cursor: pointer;
 }
+
+.callout-box.vision-callout .context-title {
+    font-size: clamp(2.6rem, 5vw, 3.8rem) !important;
+}
+
 
 .callout-box.paper-callout {
     transform: translateY(40px) rotate(1deg);
@@ -456,7 +458,8 @@
     box-shadow: 8px 8px 0px var(--color-primary);
     display: flex;
     flex-direction: column;
-    height: 100%;
+    height: auto;
+    align-self: start;
     min-width: min(100%, 410px);
     max-width: 600px;
     margin: 0 auto;
@@ -509,23 +512,33 @@
     cursor: pointer;
 }
 
+.pillar-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 1.5rem;
+    margin-bottom: 1.25rem;
+    width: 100%;
+}
+
 .pillar-icon {
-    width: 60px;
-    height: 60px;
+    width: 50px;
+    height: 50px;
     background-color: var(--color-primary);
     color: var(--color-contrast-1);
     border-radius: 50%;
-    margin-bottom: 2rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.5rem;
+    font-size: 1.25rem;
+    flex-shrink: 0;
 }
 
 .pillar-card-title {
-    font-size: 1.4rem;
-    margin-bottom: 1.25rem;
+    font-size: 1.6rem;
     line-height: 1.2;
+    margin: 0;
+    text-align: left;
 }
 
 .pillar-card-body {
@@ -689,7 +702,9 @@
 }
 
 #saeulen .section-subtitle,
-#projektpapier .section-subtitle {
+#projektpapier .section-subtitle,
+#politische-ziele .section-headline,
+#politische-ziele .section-subtitle {
     text-align: center;
 }
 
@@ -1190,11 +1205,44 @@ textarea.form-control {
 }
 
 /* --------------------------------------------------------------------------
-   VISION VIDEO SECTION
+   VISION VIDEO & CONTEXT SECTION (COMBINED)
    -------------------------------------------------------------------------- */
-.vision-wrapper {
-    max-width: 1000px;
+.vision-combined-wrapper {
+    max-width: 1500px;
     margin: 0 auto;
+    position: relative;
+}
+
+.vision-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 3rem;
+    align-items: start;
+}
+
+.vision-col-left,
+.vision-col-right {
+    width: 100%;
+}
+
+.vision-col-right .context-title {
+    text-align: center;
+    font-size: clamp(2.6rem, 5vw, 3.8rem) !important;
+}
+
+@media (min-width: 1025px) {
+    .vision-grid {
+        grid-template-columns: 0.8fr 1.2fr;
+        gap: 5rem;
+    }
+
+    .vision-col-right {
+        margin-top: 100px;
+    }
+
+    .vision-col-right .context-title {
+        text-align: left;
+    }
 }
 
 .video-container {
@@ -1428,4 +1476,97 @@ textarea.form-control {
     .time-display {
         font-size: 0.8rem;
     }
+}
+
+/* ==========================================================================
+   MOBILE COLLAPSIBLE CARDS STYLING
+   ========================================================================== */
+.card-collapse-content {
+    transition: max-height var(--transition-smooth), opacity var(--transition-fast);
+    opacity: 1;
+    overflow: hidden;
+    width: 100%;
+}
+
+@media (max-width: 768px) {
+    .card-collapse-content {
+        max-height: 0;
+        opacity: 0;
+    }
+    
+    .pillar-card.card-open .card-collapse-content,
+    .callout-box.card-open .card-collapse-content,
+    .goal-card.card-open .card-collapse-content {
+        opacity: 1;
+        margin-top: 1.5rem;
+    }
+
+    /* Set up triggers on mobile */
+    .pillar-card-header,
+    .callout-box h2,
+    .goal-card h3 {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        width: 100% !important;
+        cursor: pointer !important;
+        margin-bottom: 0 !important;
+        transition: margin-bottom var(--transition-smooth) !important;
+    }
+
+    .pillar-card-title {
+        text-align: left !important;
+        flex-grow: 1 !important;
+        margin-left: 0.5rem !important;
+    }
+
+    /* Restore margin-bottom when open */
+    .pillar-card.card-open .pillar-card-header {
+        margin-bottom: 1.25rem !important;
+    }
+
+    .callout-box.card-open h2 {
+        margin-bottom: 1.5rem !important;
+    }
+
+    .callout-box.vision-callout.card-open h2 {
+        margin-bottom: 2rem !important;
+    }
+
+    .goal-card.card-open h3 {
+        margin-bottom: 1.25rem !important;
+    }
+}
+
+@media (min-width: 769px) {
+    .card-collapse-content {
+        max-height: none !important;
+        opacity: 1 !important;
+    }
+}
+
+.card-toggle-btn {
+    background: none;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    padding: 0.5rem;
+    display: none; /* Hidden on desktop */
+    align-items: center;
+    justify-content: center;
+    pointer-events: none; /* Click propagates to the heading */
+}
+
+@media (max-width: 768px) {
+    .card-toggle-btn {
+        display: inline-flex;
+    }
+}
+
+.card-toggle-btn .toggle-arrow {
+    transition: transform var(--transition-smooth);
+}
+
+.card-toggle-btn.expanded .toggle-arrow {
+    transform: rotate(180deg);
 }
