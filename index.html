@@ -145,13 +145,12 @@
         <!-- ------------------------------------------------------------------
              CONTEXT SECTION (Light Pink Background, Dark Text)
              ------------------------------------------------------------------ -->
-        <section id="vision" class="section-light-2">
+        <section id="ausgangslage" class="section-light-2">
             <div class="container context-wrapper">
                 <h2 class="context-title text-ultra-bold reveal">Unsere Ausgangslage</h2>
                 <div class="callout-box vision-callout reveal delay-100">
                     <p class="callout-text">
-                        Rund ein Fünftel der Bevölkerung in Deutschland ist von Armut oder sozialer Ausgrenzung bedroht. Bezahlbarer Wohnraum ist knapp, die ökonomische wie soziale Ungleichheit wächst immer weiter. Währenddessen ist das Genossenschaftswesen in Deutschland verkümmert oder dem Reformismus verfallen. Auch gegenüber der sozilistischen Idee selbst hat sich eine Desillusionierung breit gemacht. Wir wollen das ändern und durch vielfache Genossenschaftsgründungen zeigen, dass sozialistisches Wirtschaften möglich ist. Dafür bedarf es einer gemeinsamen Organisierung und dem Aufbau von Strukturen durch die wir unsere kollektiven Interessen als Arbeitende realisieren können. 
-                    </p>
+                        Trotz seiner Krisen erscheint der Kapitalismus für einen Großteil der Arbeitendenklasse als alternativlos. Genossenschaften beweisen aber das Gegenteil: Hier gehören die Produktionsmittel den Arbeiter*innen, die demokratisch über Arbeit und Profite entscheiden. Früher eine Säule der sozialistischen Bewegung, ist das Genossenschaftswesen in Deutschland heute verkümmert und vergessen. Das wollen wir ändern! Durch Genossenschaftsgründungen zeigen wir im Hier und Jetzt, dass sozialistisches Wirtschaften in der Praxis möglich ist. Dafür organisieren wir uns gemeinsam und bauen Strukturen auf, um unsere kollektiven Interessen als Arbeiter*innen durchzusetzen.                    </p>
                 </div>
                 
                 <!-- Curved Arrow pointing to the next section (right side) -->
@@ -162,6 +161,74 @@
                         </marker>
                     </defs>
                     <path d="M 200 10 C 240 100, 220 220, 70 290" fill="none" stroke="#F79B06" stroke-width="3.5" marker-end="url(#arrowhead-right)" />
+                </svg>
+            </div>
+        </section>
+
+        <!-- ------------------------------------------------------------------
+             VISION SECTION (Light Pink Background, Dark Text)
+             ------------------------------------------------------------------ -->
+        <section id="vision" class="section-light-2">
+            <div class="container vision-wrapper">
+                <h2 class="context-title text-ultra-bold reveal" style="text-align: center;">Wir stellen uns vor</h2>
+                <div class="video-container reveal delay-100">
+                    <video class="vision-video" playsinline preload="metadata">
+                        <source src="files/GAA Vorstellung.mp4" type="video/mp4">
+                        Ihr Browser unterstützt das Video-Tag nicht.
+                    </video>
+                    <button class="custom-play-button" aria-label="Video abspielen">
+                        <svg viewBox="0 0 24 24" width="36" height="36" fill="currentColor">
+                            <path d="M8 5v14l11-7z"/>
+                        </svg>
+                    </button>
+                    <!-- Custom Corporate Video Controls (Infoleiste) -->
+                    <div class="custom-video-controls">
+                        <!-- Play/Pause Button -->
+                        <button class="control-btn play-pause-btn" aria-label="Abspielen/Pause">
+                            <svg class="play-icon" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                                <path d="M8 5v14l11-7z"/>
+                            </svg>
+                            <svg class="pause-icon" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" style="display: none;">
+                                <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+                            </svg>
+                        </button>
+
+                        <!-- Progress Bar Container -->
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-fill"></div>
+                            <input type="range" class="progress-slider" min="0" max="100" value="0" step="0.1">
+                        </div>
+
+                        <!-- Time display -->
+                        <span class="time-display">0:00 / 0:00</span>
+
+                        <!-- Mute/Unmute Button -->
+                        <button class="control-btn mute-btn" aria-label="Ton an/aus">
+                            <svg class="volume-high-icon" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                                <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+                            </svg>
+                            <svg class="volume-mute-icon" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" style="display: none;">
+                                <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.21.05-.42.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>
+                            </svg>
+                        </button>
+
+                        <!-- Fullscreen Button -->
+                        <button class="control-btn fullscreen-btn" aria-label="Vollbild">
+                            <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                                <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Curved Arrow pointing to the next section (left side) -->
+                <svg class="section-arrow-left" viewBox="0 0 240 300" width="240" height="300">
+                    <defs>
+                        <marker id="arrowhead-left-vision" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                            <path d="M 0 0 L 10 5 L 0 10 z" fill="#F79B06" />
+                        </marker>
+                    </defs>
+                    <path d="M 110 10 C 10 100, 30 220, 125 290" fill="none" stroke="#F79B06" stroke-width="3.5" marker-end="url(#arrowhead-left-vision)" />
                 </svg>
             </div>
         </section>
@@ -188,7 +255,7 @@
                         </div>
                         <h3 class="pillar-card-title text-ultra-bold">Zahlungsfähigkeit durch Kredit</h3>
                         <p class="pillar-card-body">
-                            Wenn eine Bank einen Kredit gewährt, verleiht sie keine vorhandenen Einlagen, sondern erschafft neues Buchgeld durch eine Bilanzverlängerung. Wer neues Geld schaffen und bestimmten Akteuren zur Verfügung stellen kann, besitzt koordinative Macht. Das langfristige Schlüsselfaktor der GAA ist die Gründung einer sozialistisch ausgerichteten Genossenschaftsbank, um uns diese koordinative Macht der Geldschöpfung anzueignen und sie an den materiellen Klasseninteressen der Arbeiter*innenklasse auszurichten.
+                            Banken sind Koordinationszentren des Kapitalismus. Indem sie Kredite vergeben, erschaffen sie Geld aus dem Nichts. Wer neues Geld schaffen und bestimmten Akteuren zur Verfügung stellen kann, besitzt dadurch die Macht unsere wirtschaftlichen Aktivitäten zu koordinieren. Ein langfristiger Schlüsselfaktor der GAA ist daher die Gründung einer sozialistisch ausgerichteten Genossenschaftsbank, um uns diese koordinative Macht der Geldschöpfung anzueignen und sie an den materiellen Klasseninteressen der Arbeiter*innenklasse auszurichten.
                         </p>
                     </div>
 
@@ -205,7 +272,7 @@
                         </div>
                         <h3 class="pillar-card-title text-ultra-bold">Gemeinwirtschaft &amp; Solidarität</h3>
                         <p class="pillar-card-body">
-                            Einmal gegründete Genossenschaften sollten nicht isoliert voneinander agieren, sondern einen umfassenderen gemeinwirtschaftlichen Verbund bilden. Dies umfasst solidarische Unterstützungsmechanismen in Krisenzeiten, bei denen Ressourcen und Kapazitäten über einen übergeordneten Solidaritätsfonds umverteilt werden, um kollektive Resilienz zu gewährleisten und das Solidaritätsparadox des Marktwettbewerbs zu durchbrechen.
+                            Einmal gegründete Genossenschaften sollten nicht isoliert voneinander agieren, sondern einen umfassenderen gemeinwirtschaftlichen Verbund bilden. Dies umfasst solidarische Unterstützungsmechanismen in Krisenzeiten, bei denen Ressourcen und Kapazitäten über einen übergeordneten Solidaritätsfonds umverteilt werden, um kollektive Resilienz zu gewährleisten.
                         </p>
                     </div>
 
@@ -220,19 +287,19 @@
                         </div>
                         <h3 class="pillar-card-title text-ultra-bold">Unterstützung bei Gründung</h3>
                         <p class="pillar-card-body">
-                            Da der Anteil von Menschen aus der arbeitenden Klasse, die eigenständig ein Unternehmen gründen, vergleichsweise gering ist, erscheint kollektiver Rückhalt im Gründungsprozess als zentrale Voraussetzung. Unsere unternehmerische Abteilung bündelt Wissen und Kapazitäten, begleitet den gesamten formalen wie praktischen Gründungsprozess und setzt Mitglieder mit Gründungsinteresse miteinander in Verbindung.
+                            Der Anteil von Menschen aus der Arbeitender*innenklasse, die auf eigene Faust ein Unternehmen gründen würden, ist vergleichsweise gering. Ein starker kollektiver Rückhalt im Gründungsprozess ist daher eine zentrale Voraussetzung. Unsere unternehmerische Abteilung soll Mitglieder mit Gründungsinteresse miteinander in Verbindung setzen, um Gründungen zu initieren. Außerdem wollen wir hier Wissen und Kapazitäten bündeln, um den gesamten formalen wie praktischen Gründungsprozess zu begleiten.
                         </p>
                     </div>
                 </div>
                 
-                <!-- Curved Arrow pointing to the next section (left side) -->
-                <svg class="section-arrow-left" viewBox="0 0 240 300" width="240" height="300">
+                <!-- Curved Arrow pointing to the next section (right side) -->
+                <svg class="section-arrow-right" viewBox="0 0 240 300" width="240" height="300">
                     <defs>
-                        <marker id="arrowhead-left" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <marker id="arrowhead-right-saeulen" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
                             <path d="M 0 0 L 10 5 L 0 10 z" fill="#F79B06" />
                         </marker>
                     </defs>
-                    <path d="M 110 10 C 10 100, 30 220, 125 290" fill="none" stroke="#F79B06" stroke-width="3.5" marker-end="url(#arrowhead-left)" />
+                    <path d="M 200 10 C 240 100, 220 220, 70 290" fill="none" stroke="#F79B06" stroke-width="3.5" marker-end="url(#arrowhead-right-saeulen)" />
                 </svg>
             </div>
         </section>
@@ -254,8 +321,8 @@
                     </div>
                     <div class="goal-card-wrapper">
                         <div class="goal-card bestcase reveal">
-                            <h3 class="text-bold">Bestcase: Transformator</h3>
-                            <p>Die GAA agiert als Transformator: Wir bauen eine real existierende alternative Gemeinwirtschaft auf und transformieren einen substantiellen Anteil der kapitalistischen Wirtschaft. Dadurch können sich tausende Menschen aus Lohnarbeitsverhältnissen emanzipieren, wir üben Wettbewerbsdruck auf kapitalistische Unternehmen aus und reduzieren die Zahl der Lohnarbeiter*innen, die Ausbeutung sichern. Wir streben so eine grundlegende Veränderung der politökonomischen Verhältnisse an – Erwerbsarbeit von Ausbeutung zu Arbeitskampf transformieren.</p>
+                            <h3 class="text-bold">Bestcase: Transformatior</h3>
+                            <p>Wir bauen eine real existierende alternative Gemeinwirtschaft auf und transformieren einen substantiellen Anteil der kapitalistischen Wirtschaft. Dadurch können sich tausende Menschen aus Lohnarbeitsverhältnissen emanzipieren, wir üben Wettbewerbsdruck auf kapitalistische Unternehmen aus und reduzieren die Zahl der Lohnarbeiter*innen, durch deren Ausbeutung die Eigentumsverhältnisse des Kapitalismus reproduziert werden. Wir streben so eine grundlegende Veränderung der politökonomischen Verhältnisse an und wollen Erwerbsarbeit von Ausbeutung zu Arbeitskampf transformieren.</p>
                         </div>
                     </div>
                 </div>

@@ -1188,3 +1188,244 @@ textarea.form-control {
 #politische-ziele .container {
     max-width: 1100px;
 }
+
+/* --------------------------------------------------------------------------
+   VISION VIDEO SECTION
+   -------------------------------------------------------------------------- */
+.vision-wrapper {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.video-container {
+    background-color: var(--color-contrast-1);
+    border: 3px solid var(--color-primary);
+    border-radius: 16px;
+    padding: 0;
+    box-shadow: 8px 8px 0px var(--color-primary);
+    margin: 2rem auto 0 auto;
+    max-width: 1000px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+                box-shadow 0.3s ease, 
+                opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    opacity: 0;
+    transform: translateY(40px) rotate(1deg);
+}
+
+.video-container.active {
+    opacity: 1;
+    transform: translateY(0) rotate(1deg);
+}
+
+.video-container:hover {
+    transform: translateY(-5px) rotate(0deg) scale(1.01);
+    box-shadow: 12px 12px 0px var(--color-primary);
+}
+
+.video-container.playing.hide-cursor {
+    cursor: none;
+}
+
+.vision-video {
+    width: 100%;
+    height: auto;
+    display: block;
+    border: none;
+    border-radius: inherit;
+}
+
+.custom-play-button {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(1);
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background-color: var(--color-primary);
+    border: 3px solid var(--color-accent);
+    color: var(--color-accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+                background-color 0.3s ease, 
+                border-color 0.3s ease,
+                color 0.3s ease,
+                box-shadow 0.3s ease,
+                opacity 0.4s ease;
+    box-shadow: 0 10px 30px rgba(76, 29, 159, 0.5);
+    padding: 0;
+}
+
+.custom-play-button svg {
+    margin-left: 4px; /* Optical centering for play triangle */
+    transition: transform 0.3s ease;
+}
+
+.custom-play-button:hover {
+    transform: translate(-50%, -50%) scale(1.1);
+    background-color: var(--color-accent);
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+    box-shadow: 0 15px 35px rgba(247, 155, 6, 0.6);
+}
+
+.custom-play-button:hover svg {
+    transform: scale(1.1);
+}
+
+/* State when video is playing */
+.video-container.playing .custom-play-button {
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, -50%) scale(0.8);
+}
+
+/* Custom Video Controls (Infoleiste) */
+.custom-video-controls {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(76, 29, 159, 0.95) 0%, rgba(76, 29, 159, 0.4) 60%, transparent 100%);
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    padding: 2.5rem 1.5rem 1.25rem 1.5rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    z-index: 15;
+}
+
+/* Show controls when playing and user moves mouse */
+.video-container.playing.show-controls .custom-video-controls {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.control-btn {
+    background: none;
+    border: none;
+    color: #FFFFFF;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: color 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
+}
+
+.control-btn:hover {
+    color: var(--color-accent);
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: scale(1.1);
+}
+
+.play-pause-btn .play-icon {
+    margin-left: 2px;
+}
+
+.time-display {
+    color: #FFFFFF;
+    font-size: 0.9rem;
+    font-weight: 500;
+    font-family: var(--font-body);
+    white-space: nowrap;
+}
+
+/* Custom Progress Bar / Slider */
+.progress-bar-container {
+    flex-grow: 1;
+    position: relative;
+    height: 6px;
+    background-color: rgba(255, 255, 255, 0.25);
+    border-radius: 3px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: height 0.2s ease;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background-color: var(--color-accent);
+    border-radius: 3px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0%;
+    pointer-events: none;
+}
+
+.progress-slider {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    margin: 0;
+    z-index: 2;
+}
+
+.progress-bar-container:hover {
+    height: 8px;
+}
+
+.progress-bar-container:hover .progress-bar-fill::after {
+    content: '';
+    position: absolute;
+    right: -6px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: var(--color-accent);
+    border: 2px solid #FFFFFF;
+    box-shadow: 0 0 5px rgba(0,0,0,0.3);
+}
+
+.video-container:fullscreen {
+    max-width: none;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #000;
+}
+
+.video-container:fullscreen .vision-video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+@media (max-width: 768px) {
+    .video-container {
+        margin-top: 1.5rem;
+    }
+    .custom-play-button {
+        width: 70px;
+        height: 70px;
+    }
+    .custom-play-button svg {
+        width: 28px;
+        height: 28px;
+        margin-left: 3px;
+    }
+    .custom-video-controls {
+        gap: 0.75rem;
+        padding: 2rem 1rem 1rem 1rem;
+    }
+    .time-display {
+        font-size: 0.8rem;
+    }
+}
