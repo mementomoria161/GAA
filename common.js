@@ -89,6 +89,7 @@ function init() {
     init_hero_effect();
     init_breadcrumb_trail();
     init_vision_video();
+    init_collapsible_cards();
 }
 
 /* ==========================================================================
@@ -1188,5 +1189,66 @@ function init_vision_video() {
             container.classList.add("hide-cursor");
             clearTimeout(hideTimeout);
         }
+    });
+}
+
+/* ==========================================================================
+   MOBILE ACCORDION CARDS INITIALIZER
+   ========================================================================== */
+function init_collapsible_cards() {
+    const cards = document.querySelectorAll('.callout-box, .pillar-card, .goal-card');
+    
+    cards.forEach(card => {
+        // Prevent double initialization
+        if (card.querySelector('.card-collapse-content')) return;
+
+        // Try to find custom card header first, then fallback to heading
+        let trigger = card.querySelector('.pillar-card-header');
+        if (!trigger) {
+            trigger = card.querySelector('h2, h3');
+        }
+        if (!trigger) return;
+
+        // Create a wrapper for collapse content
+        const collapseWrapper = document.createElement('div');
+        collapseWrapper.className = 'card-collapse-content';
+
+        // Move all children (except trigger, canvas and toggle button) into the wrapper
+        const children = Array.from(card.children);
+        children.forEach(child => {
+            if (child !== trigger && !child.classList.contains('card-toggle-btn') && child.tagName !== 'CANVAS') {
+                collapseWrapper.appendChild(child);
+            }
+        });
+
+        card.appendChild(collapseWrapper);
+
+        // Create toggle arrow
+        const toggleBtn = document.createElement('button');
+        toggleBtn.className = 'card-toggle-btn';
+        toggleBtn.setAttribute('aria-label', 'Inhalt ein-/ausblenden');
+        toggleBtn.innerHTML = `
+            <svg class="toggle-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+        `;
+
+        trigger.appendChild(toggleBtn);
+
+        // Click handler on trigger
+        trigger.addEventListener('click', () => {
+            if (window.innerWidth > 768) return;
+            
+            const isOpen = card.classList.contains('card-open');
+            if (isOpen) {
+                card.classList.remove('card-open');
+                collapseWrapper.style.maxHeight = null;
+                toggleBtn.classList.remove('expanded');
+            } else {
+                card.classList.add('card-open');
+                collapseWrapper.style.maxHeight = collapseWrapper.scrollHeight + 'px';
+                toggleBtn.classList.add('expanded');
+            }
+        });
     });
 }
