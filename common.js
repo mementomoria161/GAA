@@ -1196,7 +1196,7 @@ function init_vision_video() {
    MOBILE ACCORDION CARDS INITIALIZER
    ========================================================================== */
 function init_collapsible_cards() {
-    const cards = document.querySelectorAll('.callout-box, .pillar-card, .goal-card');
+    const cards = document.querySelectorAll('.vision-callout, .pillar-card, .goal-card');
     
     cards.forEach(card => {
         // Prevent double initialization
