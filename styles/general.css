@@ -20,7 +20,7 @@
     
     /* Layout & Spacing */
     --container-width: 1200px;
-    --container-padding: 2rem;
+    --container-padding: 4rem;
     --header-height: 80px;
     
     /* Interactive States & Shadows */
@@ -66,18 +66,19 @@ button, input, select, textarea {
 }
 
 ::-webkit-scrollbar-track {
-    background: var(--color-bg-dark);
+    background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: rgba(247, 155, 6, 0.5); /* Vibrant Orange with opacity */
+    background: var(--color-contrast-1);
     border-radius: 5px;
-    border: 2px solid var(--color-bg-dark);
+    border: 2px solid transparent;
+    background-clip: padding-box;
     transition: var(--transition-fast);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: var(--color-accent);
+    background: var(--color-contrast-2);
 }
 
 /* Layout Elements */
@@ -188,6 +189,10 @@ a {
 
 /* Responsive adjustments */
 @media (max-width: 1024px) {
+    :root {
+        --container-padding: 2rem;
+    }
+
     .grid-4 {
         grid-template-columns: repeat(2, 1fr);
         gap: 2rem;
