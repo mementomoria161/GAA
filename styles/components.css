@@ -128,6 +128,10 @@
 }
 
 @media (min-width: 1025px) {
+    #header {
+        width: calc(100% - 8rem);
+    }
+
     .navbar {
         pointer-events: auto;
         background-color: var(--color-primary);
