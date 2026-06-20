@@ -1237,7 +1237,7 @@ function init_collapsible_cards() {
 
         // Click handler on trigger
         trigger.addEventListener('click', () => {
-            if (window.innerWidth > 768) return;
+            if (window.innerWidth > 1024) return;
             
             const isOpen = card.classList.contains('card-open');
             if (isOpen) {
