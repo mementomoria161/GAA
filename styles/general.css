@@ -9,15 +9,6 @@
     --color-contrast-1: #F6BAFF;   /* Soft Pink */
     --color-contrast-2: #FBDDFF;   /* Light Pink */
     
-    /* Text Colors */
-    --text-on-dark: #FFFFFF;
-    --text-on-light: #4C1D9F;      /* Deep Purple */
-    
-    /* Semantic Colors */
-    --color-bg-dark: var(--color-primary);
-    --color-bg-light-1: var(--color-contrast-1);
-    --color-bg-light-2: var(--color-contrast-2);
-    
     /* Layout & Spacing */
     --container-width: 1200px;
     --container-padding: 4rem;
@@ -46,8 +37,8 @@ html {
 }
 
 body {
-    background-color: var(--color-bg-dark);
-    color: var(--text-on-dark);
+    background-color: var(--color-primary);
+    color: var(--color-contrast-2);
     overflow-x: hidden;
 }
 
@@ -102,18 +93,18 @@ section {
 
 /* Sections by Theme */
 .section-dark {
-    background-color: var(--color-bg-dark);
-    color: var(--text-on-dark);
+    background-color: var(--color-primary);
+    color: var(--color-contrast-2);
 }
 
 .section-light-1 {
-    background-color: var(--color-bg-light-1);
-    color: var(--text-on-light);
+    background-color: var(--color-contrast-1);
+    color: var(--color-primary);
 }
 
 .section-light-2 {
-    background-color: var(--color-bg-light-2);
-    color: var(--text-on-light);
+    background-color: var(--color-contrast-2);
+    color: var(--color-primary);
 }
 
 /* Layout Utilities */
@@ -226,22 +217,26 @@ a {
 /* ==========================================================================
    LEGAL PAGES (IMPRESSUM & DATENSCHUTZ)
    ========================================================================== */
-.legal-content {
-    padding-top: calc(var(--header-height) + 4rem);
-    padding-bottom: 6rem;
+body.legal-page {
     background: radial-gradient(circle at 50% 30%, rgba(246, 186, 255, 0.08) 0%, transparent 60%),
                 radial-gradient(circle at 10% 80%, rgba(247, 155, 6, 0.04) 0%, transparent 40%),
-                var(--color-bg-dark);
+                var(--color-primary);
+}
+
+.legal-content {
+    padding-top: calc(var(--header-height) + 8rem);
+    padding-bottom: 6rem;
+    background: transparent;
     min-height: 100vh;
 }
 
 .legal-card {
     background-color: var(--color-contrast-1) !important;
-    color: var(--text-on-light);
+    color: var(--color-primary);
     padding: 4rem 3rem;
     border-radius: 16px;
-    border: 3px solid var(--color-primary);
-    box-shadow: 8px 8px 0px var(--color-primary);
+    border: none;
+    box-shadow: none;
     margin: 0 auto;
     max-width: 900px;
 }
@@ -352,7 +347,7 @@ a {
 }
 
 .legal-page #footer {
-    background-color: var(--color-primary) !important;
+    background-color: transparent !important;
     color: var(--color-contrast-1) !important;
 }
 .legal-page #footer .footer-link {
