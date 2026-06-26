@@ -154,22 +154,131 @@ function init_footer() {
     // Left empty to allow normal navigation to impressum.html and datenschutz.html
 }
 
+var datainfoshown = false;
+
 function init_cookies() {
     const consent = localStorage.getItem("gaa_cookies");
-    const databanner = document.getElementById("databanner");
-    
-    if (consent === null && databanner) {
-        databanner.style.display = "block";
+    if (consent === "true") {
+        showcookiecontent();
+    } else {
+        hidecookiecontent();
     }
 }
 
 function cookies(choice) {
-    localStorage.setItem("gaa_cookies", choice);
     const databanner = document.getElementById("databanner");
     if (databanner) {
         databanner.style.display = "none";
     }
+    localStorage.setItem("gaa_cookies", choice ? "true" : "false");
+    init_cookies();
 }
+
+function show_databanner() {
+    const databanner = document.getElementById("databanner");
+    if (databanner) {
+        databanner.style.display = "block";
+    }
+}
+
+function clear_cookies_third_party() {
+    let fpcookies = {};
+    for (let [key, value] of Object.entries(localStorage)) {
+        if (key.includes("gaa_")) {
+            fpcookies[key] = value;
+        }
+    }
+    clear_cookies();
+    for (let [key, value] of Object.entries(fpcookies)) {
+        localStorage.setItem(key, value);
+    }
+}
+
+function clear_cookies() {
+    sessionStorage.clear();
+    localStorage.clear();
+    const cookiesList = document.cookie.split(";");
+    for (let i = 0; i < cookiesList.length; i++) {
+        const cookie = cookiesList[i];
+        const eqPos = cookie.indexOf("=");
+        const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+        document.cookie = name.trim() + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+    }
+}
+
+function showcookiecontent() {
+    var frames = document.getElementsByTagName("iframe");
+    for (let i = 0; i < frames.length; i++) {
+        let frame = frames[i];
+        if (frame.getAttribute('data-source') === "youtube") {
+            frame.style.display = "none";
+            frame.frameBorder = "0";
+            frame.title = "YouTube video player";
+            frame.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+            frame.setAttribute('allowfullscreen', '');
+
+            let thumbnail = document.createElement("img");
+            thumbnail.src = "https://img.youtube.com/vi/" + frame.getAttribute('data-id') + "/mqdefault.jpg";
+            thumbnail.classList.add("thumbnail");
+            thumbnail.classList.add(frame.className);
+
+            frame.parentNode.insertBefore(thumbnail, frame);
+        } else if (frame.getAttribute('data-source') === "spotify") {
+            frame.removeAttribute("sandbox");
+            frame.width = "700";
+            frame.height = "232";
+            frame.style.borderRadius = "12px";
+            frame.frameBorder = "0";
+            frame.allow = "autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture";
+            frame.setAttribute('allowfullscreen', '');
+            frame.src = "https://open.spotify.com/embed/episode/" + frame.getAttribute('data-id') + "?utm_source=generator&theme=0";
+            frame.style.display = "block";
+        } else if (frame.getAttribute('data-source') === "spotify-playlist") {
+            frame.removeAttribute("sandbox");
+            frame.width = "700";
+            frame.height = "700";
+            frame.style.borderRadius = "12px";
+            frame.frameBorder = "0";
+            frame.allow = "autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture";
+            frame.setAttribute('allowfullscreen', '');
+            frame.src = "https://open.spotify.com/embed/playlist/" + frame.getAttribute('data-id') + "?utm_source=generator&theme=1";
+            frame.style.display = "block";
+        } else {
+            frame.removeAttribute("sandbox");
+            frame.frameBorder = "0";
+            const src = frame.getAttribute('data-src') || frame.innerHTML;
+            frame.src = src;
+            frame.style.display = "block";
+        }
+    }
+    
+    var cookiedisclaimers = document.getElementsByClassName("cookiedisclaimer");
+    while (cookiedisclaimers.length > 0) {
+        cookiedisclaimers[0].remove();
+    }
+
+    datainfoshown = false;
+    clear_cookies_third_party();
+}
+
+function hidecookiecontent() {
+    if (datainfoshown) {
+        return;
+    }
+    var frames = document.getElementsByTagName("iframe");
+    for (let i = 0; i < frames.length; i++) {
+        var frame = frames[i];
+        var cookiedisclaimer = document.createElement("div");
+        cookiedisclaimer.innerHTML = "<span>Dieser Inhalt erfordert die <span class='cookie-link' onclick='show_databanner()'>Zustimmung zu Cookies</span>.</span>";
+        cookiedisclaimer.className = "cookiedisclaimer";
+        
+        frame.style.display = "none";
+        frame.parentNode.insertBefore(cookiedisclaimer, frame);
+        datainfoshown = true;
+    }
+}
+
+window.addEventListener("beforeunload", clear_cookies_third_party);
 
 /* ==========================================================================
    PAGE SCROLL & SCROLL SPY
